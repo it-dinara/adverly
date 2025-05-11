@@ -1,0 +1,45 @@
+.category {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s;
+  margin: 10px 0;
+}
+
+.category:hover {
+  background-color: #f9f9f9;
+  border-color: #aaaaaa;
+}
+
+.label {
+  font-weight: 500;
+  color: #000000;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon svg path {
+  fill: #000000;
+}
+
+.icon svg path:hover {
+  fill: #555555; /* Optional hover effect for the icon */
+}
+.icon svg {
+  width: 16px;
+  height: 16px;
+}
+.icon svg:hover {
+  transform: scale(1.1);
+  transition: transform 0.2s;
+}

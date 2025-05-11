@@ -1,0 +1,70 @@
+const { hostname } = require("os");
+const path = require("path");
+
+module.exports = {
+  entry: "./src/index.tsx",
+  output: {
+    filename: "bundle.js",
+    path: path.resolve(__dirname, "dist"),
+  },
+  resolve: {
+    alias: {
+      Pages: path.resolve(__dirname, "src/pages"),
+      Redux: path.resolve(__dirname, "./src/redux"),
+    },
+    extensions: [".ts", ".tsx", ".js"],
+  },
+
+  module: {
+    rules: [
+      {
+        test: /\.(ts|tsx)$/,
+        use: "ts-loader",
+        exclude: /node_modules/,
+      },
+      {
+        test: /\.css$/,
+        use: [
+          "style-loader",
+          {
+            loader: "css-loader",
+            options: {
+              modules: {
+                namedExport: false,
+                localIdentName: "[name]__[local]--[hash:base64:5]",
+                exportLocalsConvention: "camelCase", // Ensure proper exports
+              },
+            },
+          },
+        ],
+        include: /\.module\.css$/,
+      },
+      {
+        test: /\.css$/,
+        use: ["style-loader", "css-loader"],
+        exclude: /\.module\.css$/,
+      },
+    ],
+  },
+  devServer: {
+    devMiddleware: {
+      writeToDisk: true,
+    },
+    static: "./dist",
+    hot: true,
+    watchFiles: ["src/**/*"],
+    host: "0.0.0.0",
+    port: 8081,
+    historyApiFallback: true,
+    proxy: [
+      {
+        context: ["/api"],
+        target: "backend:3000",
+        secure: false,
+      },
+    ],
+    port: 8081,
+    historyApiFallback: true,
+  },
+  mode: "development",
+};

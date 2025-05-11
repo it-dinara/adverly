@@ -1,0 +1,19 @@
+# Ignore node_modules and dependencies
+node_modules
+*.log
+
+# Ignore environment files
+.env
+.env.local
+secrets/
+
+# Ignore Git repository files
+.git
+.gitignore
+
+# Ignore Dockerfile itself (optional)
+Dockerfile
+
+# Ignore miscellaneous files
+.DS_Store
+Thumbs.db

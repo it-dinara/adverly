@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "module": "ESNext",
+    "jsx": "react",
+    "strict": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "paths": {
+      "Redux/*": ["src/redux/*"]
+    },
+    "plugins": [
+      {
+        "transform": "typescript-transform-paths"
+      },
+      {
+        "transform": "typescript-transform-paths",
+        "afterDeclarations": true
+      },
+      { "name": "typescript-plugin-css-modules" }
+    ]
+  },
+  "include": ["src/**/*", "src/index.tsx"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
+}
