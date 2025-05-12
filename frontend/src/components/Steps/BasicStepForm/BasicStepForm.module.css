@@ -127,3 +127,15 @@
   border-color: #007bff; /* Blue border on focus */
   outline: none;
 }
+
+@media (min-width: 768px) {
+  .form {
+    margin: 0;
+    transition: opacity 0.5s, display 0.5s allow-discrete;
+  }
+
+  @starting-style {
+    .form {
+    }
+  }
+}

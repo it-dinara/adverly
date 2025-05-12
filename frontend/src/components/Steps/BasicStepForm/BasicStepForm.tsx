@@ -35,7 +35,10 @@ const BasicStepForm: React.FC<{ isEditing: boolean }> = ({ isEditing }) => {
       <h2 className={`${s.heading} ${isEditing ? s.editing : null}`}>
         {isEditing ? `Редактирование объявления` : `Создание объявления`}
       </h2>
-      <p className={s.description}>Заполните основные данные о вашем об</p>
+      <p className={s.description}>
+        {" "}
+        jkjkjhsdkfjhkjshdfkjhskjfhданные о вашем об
+      </p>
       <h2 className={s.subtitle}>Основной шаг</h2>
 
       <div className={s.formGroup}>
@@ -116,10 +119,6 @@ const BasicStepForm: React.FC<{ isEditing: boolean }> = ({ isEditing }) => {
           <option value={Categories.SERVICES}>{Categories.SERVICES}</option>
         </select>
       </div>
-
-      <button className={s.button} type="submit">
-        Продолжить
-      </button>
     </form>
   );
 };

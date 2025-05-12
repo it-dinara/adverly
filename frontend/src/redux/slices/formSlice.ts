@@ -32,7 +32,10 @@ interface FormData {
   price?: number;
   brand?: string; // Auto
   model?: string;
-  year?: number;
+  year?: {
+    "year-from"?: string;
+    "year-to"?: string;
+  };
   mileage?: number;
   serviceType?: string; // Services
   experience?: number;
@@ -54,6 +57,10 @@ const initialState: FormState = {
     location: "",
     photo: null,
     category: Categories.REAL_ESTATE, // Default category
+    year: {
+      "year-from": "",
+      "year-to": "",
+    },
   },
   step: 1,
   isEditing: false,

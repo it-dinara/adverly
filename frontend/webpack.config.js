@@ -31,7 +31,7 @@ module.exports = {
             options: {
               modules: {
                 namedExport: false,
-                localIdentName: "[name]__[local]--[hash:base64:5]",
+                localIdentName: "[folder]__[local]--[hash:base64:5]",
                 exportLocalsConvention: "camelCase", // Ensure proper exports
               },
             },
@@ -44,13 +44,22 @@ module.exports = {
         use: ["style-loader", "css-loader"],
         exclude: /\.module\.css$/,
       },
+      {
+        test: /\.json$/,
+        type: "asset/resource",
+        generator: {
+          filename: "data/[name][ext]",
+        },
+      },
     ],
   },
   devServer: {
     devMiddleware: {
       writeToDisk: true,
     },
-    static: "./dist",
+    static: {
+      directory: path.join(__dirname, "public"),
+    },
     hot: true,
     watchFiles: ["src/**/*"],
     host: "0.0.0.0",

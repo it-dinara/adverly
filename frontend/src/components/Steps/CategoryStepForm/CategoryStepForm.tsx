@@ -4,7 +4,10 @@ import { Categories, updateField, resetForm } from "Redux/slices/formSlice";
 import { useAppDispatch, useAppSelector } from "Redux/hooks";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Item } from "../../../pages/ItemPage";
+
+const carMileage = [
+  5000, 15000, 30000, 50000, 75000, 100000, 150000, 200000, 250000, 300000,
+];
 
 const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
   const { category } = useAppSelector((state) => state.form.formData);
@@ -13,16 +16,43 @@ const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [items, setItems] = useState<{ id: number; name: string }[]>([]);
+  const [carBrands, setCarBrands] = useState<any>([]);
+  const [selectedBrand, setSelectedBrand] = useState<any>(null);
+  const [carModelYears, setCarModelYears] = useState<any>([]);
 
-  useEffect(() => {
-    console.log("CategoryStepForm useEffect triggered");
-  }, [category]);
+  // useEffect(() => {
+  //   setCarBrands(formData.brands);
+  // }, []);
 
+  // useEffect(() => {
+  //   console.log("CategoryStepForm useEffect triggered");
+  // }, [category]);
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    dispatch(updateField({ field: name as keyof typeof formData, value }));
+    if (name === "brand") {
+      const selectedBrand = carBrands.find((car: any) => car.name === value);
+      if (selectedBrand) {
+        setCarModelYears({
+          "year-from": selectedBrand["models"][0]["year-from"],
+          "year-to": selectedBrand["models"][0]["year-to"],
+        });
+        setSelectedBrand(selectedBrand);
+      }
+    }
+    if (name === "model" && selectedBrand) {
+      const selectedModel = selectedBrand.models.find(
+        (model: any) => model.name === value
+      );
+      if (selectedModel) {
+        setCarModelYears({
+          "year-from": selectedModel["year-from"],
+          "year-to": selectedModel["year-to"],
+        });
+      }
+      dispatch(updateField({ field: name as keyof typeof formData, value }));
+    }
   };
 
   const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,23 +79,35 @@ const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
   const handleEdit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = { type: category, ...formData };
-    console.log("Form submitted:", data);
-    if (isEditing && formData.id) {
-      try {
-        const response = await axios.put<{ id: number; name: string }>(
-          `http://127.0.1:3000/items/${formData.id}`,
-          data
-        );
-        console.log("Item updated:", response.data);
-        setItems([...items, response.data]);
-        dispatch(resetForm());
-        navigate(`/list`);
-      } catch (error) {
-        console.error("Error updating item:", error);
-        handleSubmit(e);
-      }
+    console.log("Form edited:", data, isEditing, formData.id);
+    try {
+      const response = await axios.put<{ id: number; name: string }>(
+        `http://127.0.1:3000/items/${formData.id}`,
+        data
+      );
+      console.log("Item edited:", response.data);
+      setItems([...items, response.data]);
+      dispatch(resetForm());
+      navigate(`/list`);
+    } catch (error) {
+      console.error("Error updating item:", error);
+      handleSubmit(e);
     }
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`/cars.json`);
+        setCarBrands(response.data);
+      } catch (error) {
+        console.error("Error updating item:", error);
+      }
+    };
+    fetchData();
+    console.log("formData", formData);
+    setCarModelYears(formData.year);
+  }, []);
 
   return (
     <form className={s.form} onSubmit={isEditing ? handleEdit : handleSubmit}>
@@ -144,53 +186,83 @@ const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
             className={`${s.select} ${s.required}`}
             id="brand"
             name="brand"
-            value={formData.brand || ""}
+            value={formData.brand || selectedBrand}
             onChange={handleChange}
             required
           >
-            <option value="">Выберите марку</option>
-            <option value="Toyota">Toyota</option>
-            <option value="BMW">BMW</option>
-            <option value="Honda">Honda</option>
+            {carBrands &&
+              carBrands.map((car: any) => {
+                return (
+                  <option key={car.id} value={car.name}>
+                    {car.name}
+                  </option>
+                );
+              })}
+            <option value={formData.brand || ""}>
+              {formData.brand || "Выберите марку"}
+            </option>
           </select>
 
           <label className={`${s.label} ${s.required}`} htmlFor="model">
             Модель *
           </label>
-          <input
-            className={`${s.input} ${s.required}`}
-            type="text"
+          <select
+            className={`${s.select} ${s.required}`}
             id="model"
             name="model"
             value={formData.model || ""}
             onChange={handleChange}
             required
-          />
+          >
+            {selectedBrand &&
+              selectedBrand.models.map((model: any) => {
+                return (
+                  <option key={model.id} value={model.name}>
+                    {model.name}
+                  </option>
+                );
+              })}
+            <option value="">
+              {formData.model ? formData.model : "Выберите модель"}
+            </option>
+          </select>
 
           <label className={`${s.label} ${s.required}`} htmlFor="year">
             Год выпуска *
           </label>
           <input
-            className={`${s.input} ${s.required}`}
-            type="number"
+            className={`${s.select} ${s.required}`}
             id="year"
             name="year"
-            value={formData.year || ""}
-            onChange={handleNumberChange}
+            value={
+              carModelYears
+                ? `${carModelYears["year-from"]} - ${carModelYears["year-to"]}`
+                : formData["year"] && formData["year"]["year-from"]
+                ? `${formData["year"]["year-from"]} - ${formData["year"]["year-to"]}`
+                : ""
+            }
+            onChange={handleChange}
             required
           />
-
           <label className={s.label} htmlFor="mileage">
             Пробег (км)
           </label>
-          <input
-            className={s.input}
-            type="number"
+          <select
+            className={`${s.select} ${s.required}`}
             id="mileage"
             name="mileage"
             value={formData.mileage || ""}
-            onChange={handleNumberChange}
-          />
+            onChange={handleChange}
+          >
+            {carMileage.map((mileage: any) => {
+              return (
+                <option key={mileage} value={mileage}>
+                  {mileage}
+                </option>
+              );
+            })}
+            <option value="">Не указано</option>
+          </select>
         </>
       )}
 

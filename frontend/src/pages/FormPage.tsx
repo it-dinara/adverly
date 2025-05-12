@@ -34,11 +34,12 @@ const FormPage = () => {
     }
   };
   const step = useAppSelector((state) => state.form.step);
-
   return (
     <div className={s.container}>
-      <BasicStepForm isEditing={isEditing} />
-      {step === 2 && <CategoryStepForm isEditing={isEditing} />}
+      <div className={s.wrap}>
+        <BasicStepForm isEditing={isEditing} />
+        <CategoryStepForm isEditing={isEditing} />
+      </div>
 
       <h2>{items.length > 0 && `Items`}</h2>
       <ul>

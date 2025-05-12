@@ -26,7 +26,7 @@ services:
     depends_on:
       - backend
     volumes:
-      - ./frontend:/app
+      - frontend_data:/app # Use a named volume instead of a bind mount
     environment:
       - NODE_ENV=production
       - PORT=8081
@@ -46,3 +46,5 @@ services:
           ignore:
             - node_modules/
             - .git/
+volumes:
+  frontend_data:
