@@ -33,7 +33,7 @@ interface FormData {
   brand?: string; // Auto
   model?: string;
   year?: {
-    "year-from"?: string;
+    "year-from": string;
     "year-to"?: string;
   };
   mileage?: number;

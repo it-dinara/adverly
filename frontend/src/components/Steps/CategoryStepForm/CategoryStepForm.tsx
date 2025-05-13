@@ -10,23 +10,57 @@ const carMileage = [
 ];
 
 const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
-  const { category } = useAppSelector((state) => state.form.formData);
+  const { category, brand, year } = useAppSelector(
+    (state) => state.form.formData
+  );
   const formData = useAppSelector((state) => state.form.formData);
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [items, setItems] = useState<{ id: number; name: string }[]>([]);
   const [carBrands, setCarBrands] = useState<any>([]);
-  const [selectedBrand, setSelectedBrand] = useState<any>(null);
-  const [carModelYears, setCarModelYears] = useState<any>([]);
+  const [selectedBrand, setSelectedBrand] = useState<any>(brand || "");
+  const [carModelYears, setCarModelYears] = useState<any>(year);
+  const [yearRange, setYearRange] = useState("");
 
-  // useEffect(() => {
-  //   setCarBrands(formData.brands);
-  // }, []);
+  useEffect(() => {
+    if (carModelYears) {
+      dispatch(updateField({ field: "year", value: carModelYears }));
+    }
+  }, [carModelYears]); // 🔹 Обновляет Redux только после изменения carModelYears
 
-  // useEffect(() => {
-  //   console.log("CategoryStepForm useEffect triggered");
-  // }, [category]);
+  useEffect(() => {
+    console.log("years", carModelYears, yearRange);
+    const years = carModelYears;
+    if (years?.["year-from"]) {
+      setYearRange(`${years["year-from"]} - ${years["year-to"]}`);
+    } else {
+      setYearRange(""); // Очистка, если данные отсутствуют
+    }
+  }, [carModelYears]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`/cars.json`);
+        const data = response.data;
+        setCarBrands(data);
+      } catch (error) {
+        console.error("Error updating item:", error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (formData.brand) {
+      const selectedBrand = carBrands.find((car: any) => {
+        return car.name === formData.brand;
+      });
+      selectedBrand && setSelectedBrand(selectedBrand);
+    }
+  }, [formData.brand, carBrands]);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -34,25 +68,23 @@ const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
     if (name === "brand") {
       const selectedBrand = carBrands.find((car: any) => car.name === value);
       if (selectedBrand) {
-        setCarModelYears({
-          "year-from": selectedBrand["models"][0]["year-from"],
-          "year-to": selectedBrand["models"][0]["year-to"],
-        });
         setSelectedBrand(selectedBrand);
       }
+      setCarModelYears([]);
     }
     if (name === "model" && selectedBrand) {
       const selectedModel = selectedBrand.models.find(
         (model: any) => model.name === value
       );
       if (selectedModel) {
+        console.log("s,dkfslkdfksfd");
         setCarModelYears({
           "year-from": selectedModel["year-from"],
           "year-to": selectedModel["year-to"],
         });
       }
-      dispatch(updateField({ field: name as keyof typeof formData, value }));
     }
+    dispatch(updateField({ field: name as keyof typeof formData, value }));
   };
 
   const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,86 +127,11 @@ const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`/cars.json`);
-        setCarBrands(response.data);
-      } catch (error) {
-        console.error("Error updating item:", error);
-      }
-    };
-    fetchData();
-    console.log("formData", formData);
-    setCarModelYears(formData.year);
-  }, []);
-
   return (
     <form className={s.form} onSubmit={isEditing ? handleEdit : handleSubmit}>
       <h2 className={s.heading}>
         {isEditing ? "Редактирование объявления" : "Категорийный шаг"}
       </h2>
-
-      {/* Real Estate */}
-      {category === Categories.REAL_ESTATE && (
-        <>
-          <label className={`${s.label} ${s.required}`} htmlFor="propertyType">
-            Тип недвижимости *
-          </label>
-          <select
-            className={`${s.select} ${s.required}`}
-            id="propertyType"
-            name="propertyType"
-            value={formData.propertyType}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Выберите тип недвижимости</option>
-            <option value="Квартира">Квартира</option>
-            <option value="Дом">Дом</option>
-            <option value="Коттедж">Коттедж</option>
-          </select>
-
-          <label className={`${s.label} ${s.required}`} htmlFor="area">
-            Площадь (кв. м) *
-          </label>
-          <input
-            className={`${s.input} ${s.required}`}
-            type="number"
-            id="area"
-            name="area"
-            value={formData.area || ""}
-            onChange={handleNumberChange}
-            required
-          />
-
-          <label className={`${s.label} ${s.required}`} htmlFor="rooms">
-            Количество комнат *
-          </label>
-          <input
-            className={`${s.input} ${s.required}`}
-            type="number"
-            id="rooms"
-            name="rooms"
-            value={formData.rooms || ""}
-            onChange={handleNumberChange}
-            required
-          />
-
-          <label className={`${s.label} ${s.required}`} htmlFor="price">
-            Цена *
-          </label>
-          <input
-            className={`${s.input} ${s.required}`}
-            type="number"
-            id="price"
-            name="price"
-            value={formData.price || ""}
-            onChange={handleNumberChange}
-            required
-          />
-        </>
-      )}
 
       {/* Auto */}
       {category === Categories.AUTO && (
@@ -186,21 +143,15 @@ const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
             className={`${s.select} ${s.required}`}
             id="brand"
             name="brand"
-            value={formData.brand || selectedBrand}
+            value={formData.brand}
             onChange={handleChange}
-            required
           >
-            {carBrands &&
-              carBrands.map((car: any) => {
-                return (
-                  <option key={car.id} value={car.name}>
-                    {car.name}
-                  </option>
-                );
-              })}
-            <option value={formData.brand || ""}>
-              {formData.brand || "Выберите марку"}
-            </option>
+            <option value="">Выберите марку</option>
+            {carBrands.map((car: any) => (
+              <option key={car.id} value={car.name}>
+                {car.name}
+              </option>
+            ))}
           </select>
 
           <label className={`${s.label} ${s.required}`} htmlFor="model">
@@ -210,21 +161,18 @@ const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
             className={`${s.select} ${s.required}`}
             id="model"
             name="model"
-            value={formData.model || ""}
+            value={formData.model}
             onChange={handleChange}
-            required
           >
+            <option value="">Выберите модель</option>
             {selectedBrand &&
-              selectedBrand.models.map((model: any) => {
+              selectedBrand.models?.map((model: any) => {
                 return (
                   <option key={model.id} value={model.name}>
                     {model.name}
                   </option>
                 );
               })}
-            <option value="">
-              {formData.model ? formData.model : "Выберите модель"}
-            </option>
           </select>
 
           <label className={`${s.label} ${s.required}`} htmlFor="year">
@@ -234,13 +182,7 @@ const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
             className={`${s.select} ${s.required}`}
             id="year"
             name="year"
-            value={
-              carModelYears
-                ? `${carModelYears["year-from"]} - ${carModelYears["year-to"]}`
-                : formData["year"] && formData["year"]["year-from"]
-                ? `${formData["year"]["year-from"]} - ${formData["year"]["year-to"]}`
-                : ""
-            }
+            value={yearRange}
             onChange={handleChange}
             required
           />
@@ -251,9 +193,10 @@ const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
             className={`${s.select} ${s.required}`}
             id="mileage"
             name="mileage"
-            value={formData.mileage || ""}
+            value={formData.mileage}
             onChange={handleChange}
           >
+            <option value="">Не указано</option>
             {carMileage.map((mileage: any) => {
               return (
                 <option key={mileage} value={mileage}>
@@ -261,68 +204,7 @@ const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
                 </option>
               );
             })}
-            <option value="">Не указано</option>
           </select>
-        </>
-      )}
-
-      {/* Services */}
-      {category === Categories.SERVICES && (
-        <>
-          <label className={`${s.label} ${s.required}`} htmlFor="serviceType">
-            Тип услуги *
-          </label>
-          <select
-            className={s.select}
-            id="serviceType"
-            name="serviceType"
-            value={formData.serviceType || ""}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Выберите тип услуги</option>
-            <option value="Ремонт">Ремонт</option>
-            <option value="Уборка">Уборка</option>
-            <option value="Доставка">Доставка</option>
-          </select>
-
-          <label className={`${s.label} ${s.required}`} htmlFor="experience">
-            Опыт работы (лет) *
-          </label>
-          <input
-            className={`${s.input} ${s.required}`}
-            type="number"
-            id="experience"
-            name="experience"
-            value={formData.experience || ""}
-            onChange={handleNumberChange}
-            required
-          />
-
-          <label className={`${s.label} ${s.required}`} htmlFor="cost">
-            Стоимость *
-          </label>
-          <input
-            className={`${s.input} ${s.required}`}
-            type="number"
-            id="cost"
-            name="cost"
-            value={formData.cost || ""}
-            onChange={handleNumberChange}
-            required
-          />
-
-          <label className={s.label} htmlFor="schedule">
-            График работы
-          </label>
-          <input
-            className={s.input}
-            type="text"
-            id="schedule"
-            name="schedule"
-            value={formData.schedule || ""}
-            onChange={handleChange}
-          />
         </>
       )}
 
