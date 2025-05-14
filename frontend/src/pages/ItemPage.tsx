@@ -1,19 +1,10 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
-import { setItemToEdit, CategoryKeysType } from "Redux/slices/formSlice";
+import { Item } from "Types/form";
 import { useAppDispatch } from "Redux/hooks";
 import s from "./ItemPage.module.css";
-
-export interface Item {
-  id: string;
-  name: string;
-  description: string;
-  location: string;
-  category: CategoryKeysType;
-  photo?: File | null | undefined;
-  [key: string]: any;
-}
+import AxiosInstance from "AxiosInstance";
+import { setItemToEdit } from "Redux/slices/formSlice";
 
 const ItemPage: React.FC = () => {
   const [item, setItem] = useState<Item | null>(null);
@@ -30,9 +21,7 @@ const ItemPage: React.FC = () => {
     const fetchData = async () => {
       try {
         console.log("Item ID:", itemId);
-        const response = await axios.get<Item>(
-          `http://127.0.0.1:3000/items/${itemId}`
-        );
+        const response = await AxiosInstance.get<Item>(`/items/${itemId}`);
         const data = response.data;
         setItem(data);
         setError(null);
@@ -75,6 +64,13 @@ const ItemPage: React.FC = () => {
                     alt={type}
                   />
                 </div>
+              );
+            } else if (type === "year") {
+              return (
+                <p key={type} className={s.itemInfo}>
+                  <strong>{type}:</strong>
+                  <span> {value["year-from"] + "-" + value["year-to"]}</span>
+                </p>
               );
             } else {
               return (

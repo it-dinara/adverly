@@ -4,9 +4,9 @@ import {
   updateField,
   updatePhoto,
   updateStep,
-  Categories,
 } from "Redux/slices/formSlice";
 import s from "./BasicStepForm.module.css";
+import { Categories } from "Types/form";
 
 const BasicStepForm: React.FC<{ isEditing: boolean }> = ({ isEditing }) => {
   const formData = useAppSelector((state) => state.form.formData);

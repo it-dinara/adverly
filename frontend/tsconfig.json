@@ -8,7 +8,10 @@
     "moduleResolution": "node",
     "baseUrl": "./",
     "paths": {
-      "Redux/*": ["src/redux/*"]
+      "Redux/*": ["src/redux/*"],
+      "AxiosInstance": ["src/axios-adverly.ts"],
+      "Pages/*": ["src/pages/*"],
+      "Types/*": ["src/types/*"],
     },
     "plugins": [
       {

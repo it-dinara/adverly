@@ -1,63 +1,74 @@
 import React, { useEffect, useState } from "react";
 import s from "./CategoryStepForm.module.css";
-import { Categories, updateField, resetForm } from "Redux/slices/formSlice";
+import { updateField, resetForm } from "Redux/slices/formSlice";
+import { Categories, Car, YearRange } from "Types/form";
 import { useAppDispatch, useAppSelector } from "Redux/hooks";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "AxiosInstance";
+
 
 const carMileage = [
   5000, 15000, 30000, 50000, 75000, 100000, 150000, 200000, 250000, 300000,
 ];
 
 const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
+  // Get form fields from Redux
   const { category, brand, year } = useAppSelector(
     (state) => state.form.formData
   );
   const formData = useAppSelector((state) => state.form.formData);
-
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  // Local state
   const [items, setItems] = useState<{ id: number; name: string }[]>([]);
-  const [carBrands, setCarBrands] = useState<any>([]);
-  const [selectedBrand, setSelectedBrand] = useState<any>(brand || "");
-  const [carModelYears, setCarModelYears] = useState<any>(year);
+  const [carBrands, setCarBrands] = useState<Car[]>([]);
+  const [selectedBrand, setSelectedBrand] = useState<Car | null>(null);
+  const [carModelYears, setCarModelYears] = useState<YearRange | null>(
+    year || null
+  );
   const [yearRange, setYearRange] = useState("");
 
+
+  // Sync carModelYears to the Redux form state
   useEffect(() => {
     if (carModelYears) {
       dispatch(updateField({ field: "year", value: carModelYears }));
     }
-  }, [carModelYears]); // 🔹 Обновляет Redux только после изменения carModelYears
+  }, [carModelYears, dispatch]);
 
+  // Update display text for the year range
   useEffect(() => {
-    console.log("years", carModelYears, yearRange);
-    const years = carModelYears;
-    if (years?.["year-from"]) {
-      setYearRange(`${years["year-from"]} - ${years["year-to"]}`);
+    if (carModelYears) {
+      setYearRange(
+        `${carModelYears["year-from"]} - ${carModelYears["year-to"]}`
+      );
     } else {
-      setYearRange(""); // Очистка, если данные отсутствуют
+      setYearRange("");
     }
   }, [carModelYears]);
 
+  // Fetch car brands from the JSON file
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchCarBrands = async () => {
       try {
-        const response = await axios.get(`/cars.json`);
-        const data = response.data;
+        const { data } = await axios.get<Car[]>(`/cars.json`);
         setCarBrands(data);
       } catch (error) {
-        console.error("Error updating item:", error);
+        console.error("Error fetching car data:", error);
       }
     };
-    fetchData();
+
+    fetchCarBrands();
   }, []);
 
+  // If Redux has a form brand value, update the selectedBrand upon loading carBrands
   useEffect(() => {
     if (formData.brand) {
-      const selectedBrand = carBrands.find((car: any) => {
-        return car.name === formData.brand;
-      });
-      selectedBrand && setSelectedBrand(selectedBrand);
+      const brandFound =
+        carBrands.find((car) => car.name === formData.brand) || null;
+      setSelectedBrand(brandFound);
     }
   }, [formData.brand, carBrands]);
 
@@ -65,42 +76,41 @@ const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+
     if (name === "brand") {
-      const selectedBrand = carBrands.find((car: any) => car.name === value);
-      if (selectedBrand) {
-        setSelectedBrand(selectedBrand);
-      }
-      setCarModelYears([]);
-    }
-    if (name === "model" && selectedBrand) {
-      const selectedModel = selectedBrand.models.find(
-        (model: any) => model.name === value
+      const brandSelected = carBrands.find((car) => car.name === value) || null;
+      setSelectedBrand(brandSelected);
+      setCarModelYears(null); // Reset model year data if brand changes
+    } else if (name === "model" && selectedBrand) {
+      const modelSelected = selectedBrand.models.find(
+        (model) => model.name === value
       );
-      if (selectedModel) {
-        console.log("s,dkfslkdfksfd");
+      if (modelSelected) {
         setCarModelYears({
-          "year-from": selectedModel["year-from"],
-          "year-to": selectedModel["year-to"],
+          "year-from": modelSelected["year-from"],
+          "year-to": modelSelected["year-to"],
         });
       }
     }
     dispatch(updateField({ field: name as keyof typeof formData, value }));
   };
 
+  // This handler can be used for numeric inputs if needed
   const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     dispatch(updateField({ field: name as keyof typeof formData, value }));
   };
 
+  // For creating a new entry
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = { type: category, ...formData };
     try {
-      const response = await axios.post<{ id: number; name: string }>(
-        `http://127.0.0.1:3000/items`,
+      const response = await axiosInstance.post<{ id: number; name: string }>(
+        `/items`,
         data
       );
-      setItems([...items, response.data]);
+      setItems((prevItems) => [...prevItems, response.data]);
       dispatch(resetForm());
       navigate(`/list`);
     } catch (error) {
@@ -108,21 +118,21 @@ const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
     }
   };
 
+  // For editing an existing entry
   const handleEdit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = { type: category, ...formData };
-    console.log("Form edited:", data, isEditing, formData.id);
     try {
-      const response = await axios.put<{ id: number; name: string }>(
-        `http://127.0.1:3000/items/${formData.id}`,
+      const response = await axiosInstance.put<{ id: number; name: string }>(
+        `/items/${formData.id}`,
         data
       );
-      console.log("Item edited:", response.data);
-      setItems([...items, response.data]);
+      setItems((prevItems) => [...prevItems, response.data]);
       dispatch(resetForm());
       navigate(`/list`);
     } catch (error) {
       console.error("Error updating item:", error);
+      // Fallback behavior; consider improving error handling here
       handleSubmit(e);
     }
   };
@@ -133,7 +143,6 @@ const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
         {isEditing ? "Редактирование объявления" : "Категорийный шаг"}
       </h2>
 
-      {/* Auto */}
       {category === Categories.AUTO && (
         <>
           <label className={`${s.label} ${s.required}`} htmlFor="brand">
@@ -147,7 +156,7 @@ const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
             onChange={handleChange}
           >
             <option value="">Выберите марку</option>
-            {carBrands.map((car: any) => (
+            {carBrands.map((car) => (
               <option key={car.id} value={car.name}>
                 {car.name}
               </option>
@@ -166,13 +175,11 @@ const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
           >
             <option value="">Выберите модель</option>
             {selectedBrand &&
-              selectedBrand.models?.map((model: any) => {
-                return (
-                  <option key={model.id} value={model.name}>
-                    {model.name}
-                  </option>
-                );
-              })}
+              selectedBrand.models.map((model) => (
+                <option key={model.id} value={model.name}>
+                  {model.name}
+                </option>
+              ))}
           </select>
 
           <label className={`${s.label} ${s.required}`} htmlFor="year">
@@ -186,6 +193,7 @@ const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
             onChange={handleChange}
             required
           />
+
           <label className={s.label} htmlFor="mileage">
             Пробег (км)
           </label>
@@ -197,13 +205,11 @@ const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
             onChange={handleChange}
           >
             <option value="">Не указано</option>
-            {carMileage.map((mileage: any) => {
-              return (
-                <option key={mileage} value={mileage}>
-                  {mileage}
-                </option>
-              );
-            })}
+            {carMileage.map((mileage) => (
+              <option key={mileage} value={mileage}>
+                {mileage}
+              </option>
+            ))}
           </select>
         </>
       )}

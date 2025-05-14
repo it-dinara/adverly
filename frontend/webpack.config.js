@@ -10,7 +10,9 @@ module.exports = {
   resolve: {
     alias: {
       Pages: path.resolve(__dirname, "src/pages"),
-      Redux: path.resolve(__dirname, "./src/redux"),
+      Redux: path.resolve(__dirname, "src/redux"),
+      AxiosInstance: path.resolve(__dirname, "src/axios-adverly.ts"),
+      Types: path.resolve(__dirname, "src/types"),
     },
     extensions: [".ts", ".tsx", ".js"],
   },
@@ -64,6 +66,7 @@ module.exports = {
     watchFiles: ["src/**/*"],
     host: "0.0.0.0",
     port: 8081,
+    compress: true,
     historyApiFallback: true,
     proxy: [
       {

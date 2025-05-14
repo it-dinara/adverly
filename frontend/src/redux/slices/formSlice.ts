@@ -1,62 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { FormData, FormState, Categories} from "Types/form";
 
-export const Categories = {
-  REAL_ESTATE: "Недвижимость",
-  AUTO: "Авто",
-  SERVICES: "Услуги",
-} as const;
-
-export type CategoriesType = typeof Categories;
-export type CategoryKeysType = CategoriesType[keyof CategoriesType] | undefined;
-
-interface Item {
-  id: string;
-  name: string;
-  description: string;
-  location: string;
-  category: CategoryKeysType;
-  photo?: File | null | undefined;
-  [key: string]: any;
-}
-
-interface FormData {
-  id?: string; // Added ID for identification
-  name: string;
-  description: string;
-  location: string;
-  photo?: File | null;
-  category: CategoryKeysType;
-  propertyType?: string; // Real estate
-  area?: number;
-  rooms?: number;
-  price?: number;
-  brand?: string; // Auto
-  model?: string;
-  year?: {
-    "year-from": string;
-    "year-to"?: string;
-  };
-  mileage?: number;
-  serviceType?: string; // Services
-  experience?: number;
-  cost?: number;
-  schedule?: string;
-  [key: string]: any;
-}
-
-interface FormState {
-  formData: FormData;
-  step: number;
-  isEditing: boolean;
-}
-
-const initialState: FormState = {
+export const initialState: FormState = {
   formData: {
     name: "",
     description: "",
     location: "",
     photo: null,
-    category: Categories.REAL_ESTATE, // Default category
+    category: Categories.REAL_ESTATE,
+    brand: "",
+    model: "",
     year: {
       "year-from": "",
       "year-to": "",
@@ -100,7 +53,7 @@ const unifiedFormSlice = createSlice({
       action: PayloadAction<
         Pick<
           FormData,
-          "id" | "name" | "description" | "location" | "photo" | "category"
+          "id" | "name" | "description" | "location" | "photo" | "category" | "carFormData"
         >
       >
     ) {

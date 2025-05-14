@@ -3,14 +3,9 @@ import { Link } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "Redux/hooks";
 import Pagination from "../components/Pagination/Pagination";
 import { fetchItems } from "Redux/slices/itemsListSlice";
-import { Categories } from "Redux/slices/formSlice";
-import s from "./ItemsListPage.module.css"; // Import the CSS file
+import { Categories, FilterOptionsType } from "Types/form";
+import s from "./ItemsListPage.module.css";
 
-type FilterOptionsType = {
-  [key in typeof Categories as string]: {
-    [key: string]: string[] | number[];
-  };
-};
 
 const filterOptions: FilterOptionsType = {
   [Categories.REAL_ESTATE]: {

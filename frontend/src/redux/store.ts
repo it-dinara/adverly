@@ -34,11 +34,6 @@ const store = configureStore({
       serializableCheck: {
         ignoredActions: [
           "persist/PERSIST",
-          // "persist/REHYDRATE",
-          // "persist/FLUSH",
-          // "persist/PAUSE",
-          // "persist/PURGE",
-          // "persist/REGISTER",
         ],
       },
     }).prepend(listenerMiddleware.middleware),
