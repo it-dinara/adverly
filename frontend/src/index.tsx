@@ -8,11 +8,11 @@ import { BrowserRouter } from "react-router-dom";
 import { PersistGate } from "redux-persist/es/integration/react";
 const app = (
   <Provider store={store}>
-    {/* <PersistGate loading={null} persistor={persistor}> */}
+    <PersistGate loading={null} persistor={persistor}>
       <BrowserRouter>
         <App />
       </BrowserRouter>
-    {/* </PersistGate> */}
+    </PersistGate>
   </Provider>
 );
 

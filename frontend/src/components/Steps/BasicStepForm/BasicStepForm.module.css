@@ -1,132 +1,69 @@
-/* General Form Styling */
 .form {
+  /* Your existing form styles */
   max-width: 600px;
-  margin: 20px auto;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  animation: fadeIn 0.6s ease-in-out;
+  margin: 0 auto;
+  padding: 1rem;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Heading */
 .heading {
-  text-align: center;
-  color: #333;
-  font-size: 22px;
-  font-weight: bold;
-  margin-bottom: 15px;
-  animation: slideDown 0.5s ease-in-out;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
 }
 
-/* Description Text */
+.editing {
+  color: #0077cc;
+}
+
 .description {
-  text-align: center;
-  color: #666;
-  font-size: 16px;
-  margin-bottom: 20px;
+  font-size: 1rem;
+  margin-bottom: 1rem;
 }
 
 .subtitle {
-  text-align: center;
-  color: #333;
-  font-size: 18px;
-  margin-bottom: 10px;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
 }
 
-/* Label */
+.formGroup {
+  margin-bottom: 1rem;
+}
+
 .label {
   display: block;
-  font-size: 16px;
-  margin-bottom: 5px;
-  color: #333;
-}
-
-/* Required Label */
-.required {
+  margin-bottom: 0.3rem;
   font-weight: bold;
-  color: red;
 }
 
-/* Input Fields */
-.input,
-.select,
-.fileInput {
+.input, .select {
   width: 100%;
-  padding: 10px;
-  font-size: 16px;
+  padding: 0.5rem;
   border: 1px solid #ccc;
-  border-radius: 5px;
-  margin-bottom: 15px;
-  transition: border-color 0.3s ease-in-out;
+  border-radius: 4px;
 }
 
-.input:focus,
-.select:focus,
-.fileInput:focus {
-  border-color: #007bff;
-}
-
-/* File Input */
 .fileInput {
-  cursor: pointer;
+  padding: 0.3rem;
 }
 
-/* Submit Button */
 .button {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  background-color: #007bff;
-  color: white;
-  font-size: 16px;
+  padding: 0.7rem 1.5rem;
+  background-color: #0077cc;
+  color: #fff;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
 
-.button:hover {
-  background-color: #0056b3;
-  transform: scale(1.05);
+/* --------- ERROR STYLE --------- */
+.error {
+  color: #ff0033;      /* Red color for errors */
+  font-size: 0.85rem;   /* Slightly smaller font size */
+  margin-top: 0.25rem;  /* A small margin above the error message */
 }
-
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* Required Labels - Unified Styling */
-.required {
-  font-weight: bold;
-  color: #007bff; /* Blue highlight instead of red */
-}
-
-/* Input Fields - Unified Styling */
-.input,
-.select {
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  border: 2px solid #ccc;
-  border-radius: 5px;
-  margin-bottom: 15px;
-  transition: border-color 0.3s ease-in-out;
-}
-
-.input:focus,
-.select:focus {
-  border-color: #007bff; /* Blue border on focus */
-  outline: none;
-}
+/* --------- MEDIA QUERIES --------- */
 
 @media (min-width: 768px) {
   .form {

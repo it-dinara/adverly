@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { FormData, FormState, Categories} from "Types/form";
+import { FormData, FormState, Categories } from "Types/form";
 
 export const initialState: FormState = {
   formData: {
@@ -7,12 +7,13 @@ export const initialState: FormState = {
     description: "",
     location: "",
     photo: null,
-    category: Categories.REAL_ESTATE,
-    brand: "",
-    model: "",
-    year: {
-      "year-from": "",
-      "year-to": "",
+    category: Categories.AUTO || Categories.REAL_ESTATE || Categories.SERVICES,
+    auto: {
+      category: Categories.AUTO,
+      brand: "",
+      model: "",
+      year: { "year-from": 0, "year-to": 0 },
+      mileage: undefined,
     },
   },
   step: 1,
@@ -31,6 +32,15 @@ const unifiedFormSlice = createSlice({
       state.formData[field] = value;
       if (field === "category") {
         state.step = 1; // Reset step when category changes
+      }
+    },
+    updateAutoField<T extends keyof FormData["auto"]>(
+      state: FormState,
+      action: PayloadAction<{ field: T; value: FormData["auto"][T] }>
+    ) {
+      const { field, value } = action.payload;
+      if (state.formData.auto) {
+        state.formData.auto[field] = value;
       }
     },
     updatePhoto(state, action: PayloadAction<File | null>) {
@@ -53,7 +63,7 @@ const unifiedFormSlice = createSlice({
       action: PayloadAction<
         Pick<
           FormData,
-          "id" | "name" | "description" | "location" | "photo" | "category" | "carFormData"
+          "id" | "name" | "description" | "location" | "photo" | "category" | "auto"
         >
       >
     ) {
@@ -71,6 +81,7 @@ export const {
   resetForm,
   setFormDataForEdit,
   setItemToEdit,
+  updateAutoField,
 } = unifiedFormSlice.actions;
 
 export default unifiedFormSlice.reducer;

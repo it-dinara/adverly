@@ -45,7 +45,7 @@ app.post("/items", (req, res) => {
       }
       break;
     case ItemCategories.AUTO:
-      if (!rest.brand || !rest.model || !rest.year || !rest.mileage) {
+      if (!rest.brand || !rest.model || !rest.year) {
         return res
           .status(400)
           .json({ error: "Missing required fields for Auto" });

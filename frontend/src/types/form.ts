@@ -15,6 +15,7 @@ export interface Item {
   category: CategoryKeysType;
   photo?: File | null | undefined;
   [key: string]: any;
+  auto: CarFormData;
 }
 
 export interface FormData {
@@ -34,17 +35,20 @@ export interface FormData {
   cost?: number;
   schedule?: string;
   [key: string]: any;
-  carFormData?: CarFormData;
+  // Auto
+  auto: CarFormData;
 }
 
-export interface CarFormData extends FormData {
+export interface CarFormData {
+  category: CategoriesType["AUTO"];
   brand: string; // Auto
   model: string;
   year: {
-    "year-from": string;
-    "year-to"?: string;
+    "year-from": number;
+    "year-to"?: number;
   };
   mileage?: number;
+  [key: string]: any;
 }
 
 export interface FormState {
@@ -78,4 +82,3 @@ export type FilterOptionsType = {
     [key: string]: string[] | number[];
   };
 };
-
