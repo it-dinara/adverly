@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import s from "./CategoryStepForm.module.css";
 import { useAppDispatch, useAppSelector } from "Redux/hooks";
-import { resetForm, updateAutoField } from "Redux/slices/formSlice";
+import { resetForm, updateAutoField, selectAuto } from "Redux/slices/formSlice";
 import { Categories, Car } from "Types/form";
 import axiosInstance from "AxiosInstance";
 import { Form, useNavigate } from "react-router-dom";
@@ -33,8 +33,11 @@ const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const formData = useAppSelector((state) => state.form.formData);
+  const auto = useAppSelector(selectAuto);
+  console.log("rerender CategoryStepForm!!!!!!!!!!!!!!!!!!!!!!", auto);
+  const { brand, model, year, mileage } = auto;
   const [carBrands, setCarBrands] = useState<Car[]>([]);
-  const { brand, model, year, mileage } = formData.auto;
+
   // console.log("brand, model, year, mileage", brand, model, year, mileage);
 
   useEffect(() => {
@@ -100,9 +103,14 @@ const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
   }, [selectedBrandName, selectedModelName, carBrands, setValue]);
 
   const onSubmit = async (data: AutoFormValues) => {
+    console.log("---------------------onSubmit", data);
+    Object.entries(data).forEach(([field, value]) => {
+      dispatch(updateAutoField({ field: field as keyof typeof data, value }));
+    });
     const { auto, ...mergedData } = formData; // Деструктурируем и исключаем auto
     try {
       if (isEditing) {
+        console.log("---------------------formData.id", formData.id);
         await axiosInstance.put(`/items/${formData.id}`, {
           ...mergedData,
           ...auto,
@@ -118,6 +126,7 @@ const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
   };
 
   const onChange = (data: AutoFormValues) => {
+    console.log("//////////////////////", data);
     Object.entries(data).forEach(([field, value]) => {
       dispatch(updateAutoField({ field: field as keyof typeof data, value }));
     });
@@ -163,15 +172,21 @@ const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
               id="model"
               {...register("model")}
             >
-              <option value={model || ""}>{model || "Выберите модель"}</option>
               {selectedBrandName &&
                 carBrands
                   .find((car) => car.name === selectedBrandName)
-                  ?.models.map((model) => (
-                    <option key={model.id} value={model.name}>
-                      {model.name}
-                    </option>
-                  ))}
+                  ?.models.map((m) => {
+                    console.log("selectedBrandName", selectedBrandName, brand, model);
+                    return (
+                      <option
+                        key={m.id}
+                        selected={model === m.name}
+                        value={m.name}
+                      >
+                        {m.name}
+                      </option>
+                    );
+                  })}
             </select>
             {errors.model && (
               <div className={s.error}>{errors.model.message?.toString()}</div>

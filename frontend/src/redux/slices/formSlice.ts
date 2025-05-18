@@ -54,10 +54,6 @@ const unifiedFormSlice = createSlice({
       state.step = initialState.step;
       state.isEditing = initialState.isEditing;
     },
-    setFormDataForEdit(state, action: PayloadAction<FormData>) {
-      state.isEditing = true;
-      state.formData = action.payload;
-    },
     setItemToEdit(
       state,
       action: PayloadAction<
@@ -79,7 +75,6 @@ export const {
   updatePhoto,
   updateStep,
   resetForm,
-  setFormDataForEdit,
   setItemToEdit,
   updateAutoField,
 } = unifiedFormSlice.actions;
@@ -87,3 +82,7 @@ export const {
 export default unifiedFormSlice.reducer;
 export const selectFormData = (state: { form: FormState }) =>
   state.form.formData;
+
+
+export const selectAuto = (state: { form: FormState }) =>
+  state.form.formData.auto;

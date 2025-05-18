@@ -36,11 +36,32 @@ const ItemPage: React.FC = () => {
       }
     };
     fetchData();
-  }, [itemId, dispatch]);
+  }, [itemId]);
 
   const handleEdit = () => {
     if (item) {
-      dispatch(setItemToEdit(item));
+      if(item.category === "Авто") {
+        item.auto = {
+          category: item.category,
+          brand: item.brand,
+          model: item.model,
+          year: {
+            "year-from": item["year-from"],
+            "year-to": item["year-to"],
+          },
+          mileage: item.mileage,
+        };
+      }
+      const itemToEdit = {
+        id: item.id,
+        name: item.name,
+        description: item.description,
+        location: item.location,
+        category: item.category,
+        auto: item.auto,
+      };
+      dispatch(setItemToEdit(itemToEdit));
+      console.log("item        ---------", item);
     }
   };
 
