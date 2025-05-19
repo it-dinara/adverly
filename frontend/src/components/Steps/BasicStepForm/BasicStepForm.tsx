@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useAppDispatch, useAppSelector } from "Redux/hooks";
-import { updateStep, updatePhoto, updateField } from "Redux/slices/formSlice";
+import { useAppDispatch } from "Redux/hooks";
+import { updateStep, updatePhoto } from "Redux/slices/formSlice";
 import s from "./BasicStepForm.module.css";
 import { Categories } from "Types/form";
 
@@ -24,15 +24,16 @@ const BasicStepForm: React.FC<{ isEditing: boolean }> = ({ isEditing }) => {
   const dispatch = useAppDispatch();
 
   // Инициализируем react-hook-form с использованием zodResolver
-  const formData = useAppSelector((state) => state.form.formData);
+  const formData = sessionStorage.getItem("firstStepData");
   const {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: formData, // Set initial form default values from the store
+    defaultValues: formData ? JSON.parse(formData) : {}, // Set initial form default values from the store
   });
 
   // Обработчик выбора файла (фото)
@@ -44,26 +45,42 @@ const BasicStepForm: React.FC<{ isEditing: boolean }> = ({ isEditing }) => {
     dispatch(updatePhoto(file));
   };
 
-  // Обработчик отправки формы
-  const onChange = (data: FormValues) => {
-    // Здесь можно, например, сохранить данные формы в Redux или отправить API-запрос
-    Object.entries(data).forEach(([field, value]) => {
-      dispatch(updateField({ field: field as keyof typeof data, value }));
-    });
+  // Load stored values when the component mounts
+  useEffect(() => {
+    const storedData = sessionStorage.getItem("firstStepData");
+    if (storedData) {
+      const parsedData = JSON.parse(storedData);
+      Object.keys(parsedData).forEach((key) => {
+        setValue(key as keyof FormValues, parsedData[key]);
+      });
+    }
+    return () => {
+      // Clear sessionStorage when the component unmounts
+      if (isEditing === false) {
+        sessionStorage.removeItem("firstStepData");
+      }
+    };
+  }, [setValue]);
 
+  // Watch form values and store them in sessionStorage
+  useEffect(() => {
+    const subscription = watch((data) => {
+      sessionStorage.setItem("firstStepData", JSON.stringify(data));
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
+
+  const onSubmit = (data: FormValues) => {
     dispatch(updateStep(2));
     console.log("Form submitted:", data);
   };
 
-
   return (
-    <form onChange={handleSubmit(onChange)} className={s.form}>
+    <form onSubmit={handleSubmit(onSubmit)} className={s.form}>
       <h2 className={`${s.heading} ${isEditing ? s.editing : ""}`}>
         {isEditing ? "Редактирование объявления" : "Создание объявления"}
       </h2>
-      <p className={s.description}>
-          Заполните форму
-      </p>
+      <p className={s.description}>Заполните форму</p>
       <h2 className={s.subtitle}>Основной шаг</h2>
 
       <div className={s.formGroup}>
@@ -130,7 +147,9 @@ const BasicStepForm: React.FC<{ isEditing: boolean }> = ({ isEditing }) => {
         </label>
         <select className={s.select} id="category" {...register("category")}>
           <option value="">Выберите категорию *</option>
-          <option value={Categories.REAL_ESTATE}>{Categories.REAL_ESTATE}</option>
+          <option value={Categories.REAL_ESTATE}>
+            {Categories.REAL_ESTATE}
+          </option>
           <option value={Categories.AUTO}>{Categories.AUTO}</option>
           <option value={Categories.SERVICES}>{Categories.SERVICES}</option>
         </select>
@@ -139,7 +158,9 @@ const BasicStepForm: React.FC<{ isEditing: boolean }> = ({ isEditing }) => {
         )}
       </div>
 
-      <button className={s.button} type="submit">Далее</button>
+      <button className={s.button} type="submit">
+        Далее
+      </button>
     </form>
   );
 };

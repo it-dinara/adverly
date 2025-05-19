@@ -43,10 +43,6 @@ export interface CarFormData {
   category: CategoriesType["AUTO"];
   brand: string; // Auto
   model: string;
-  year: {
-    "year-from": number;
-    "year-to"?: number;
-  };
   mileage?: number;
   [key: string]: any;
 }
@@ -61,8 +57,7 @@ export interface FormState {
 interface CarModel {
   id: string;
   name: string;
-  "year-from": string;
-  "year-to": string;
+  year: number;
 }
 
 export interface Car {
@@ -71,10 +66,14 @@ export interface Car {
   models: CarModel[];
 }
 
-// Define type for the year range used from the car’s model data
-export interface YearRange {
-  "year-from"?: string;
-  "year-to"?: string;
+export interface CarBrand {
+  id: string;
+  name: string;
+  models: CarModel[];
+}
+
+export interface CarBrands {
+  [key: string]: CarBrand[];
 }
 
 export type FilterOptionsType = {

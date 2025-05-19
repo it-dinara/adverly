@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "Redux/hooks";
 import Pagination from "../components/Pagination/Pagination";
 import { fetchItems } from "Redux/slices/itemsListSlice";
+import { setEditing } from "Redux/slices/formSlice";
 import { Categories, FilterOptionsType } from "Types/form";
 import s from "./ItemsListPage.module.css";
-
 
 const filterOptions: FilterOptionsType = {
   [Categories.REAL_ESTATE]: {
@@ -35,6 +35,9 @@ const ItemsListPage: React.FC = () => {
 
   useEffect(() => {
     dispatch(fetchItems());
+    dispatch(setEditing(false)); // Сброс состояния редактирования при загрузке страницы
+    sessionStorage.removeItem("firstStepData");
+    sessionStorage.removeItem("secondStepData");
   }, [dispatch]);
 
   const [filteredItems, setFilteredItems] = useState(items);

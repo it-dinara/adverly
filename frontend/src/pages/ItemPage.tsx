@@ -4,7 +4,7 @@ import { Item } from "Types/form";
 import { useAppDispatch } from "Redux/hooks";
 import s from "./ItemPage.module.css";
 import AxiosInstance from "AxiosInstance";
-import { setItemToEdit } from "Redux/slices/formSlice";
+import { setEditing } from "Redux/slices/formSlice";
 
 const ItemPage: React.FC = () => {
   const [item, setItem] = useState<Item | null>(null);
@@ -35,24 +35,15 @@ const ItemPage: React.FC = () => {
         }
       }
     };
+
     fetchData();
   }, [itemId]);
 
   const handleEdit = () => {
+    let firstStepData = {};
+    let secondStepData = {};
     if (item) {
-      if(item.category === "Авто") {
-        item.auto = {
-          category: item.category,
-          brand: item.brand,
-          model: item.model,
-          year: {
-            "year-from": item["year-from"],
-            "year-to": item["year-to"],
-          },
-          mileage: item.mileage,
-        };
-      }
-      const itemToEdit = {
+      firstStepData = {
         id: item.id,
         name: item.name,
         description: item.description,
@@ -60,9 +51,22 @@ const ItemPage: React.FC = () => {
         category: item.category,
         auto: item.auto,
       };
-      dispatch(setItemToEdit(itemToEdit));
-      console.log("item        ---------", item);
+      sessionStorage.setItem("firstStepData", JSON.stringify(firstStepData));
+      console.log("firstStepData", firstStepData);
+      if (item.category === "Авто") {
+        secondStepData = {
+          brand: item.brand,
+          model: item.model,
+          year: item.year,
+          mileage: item.mileage,
+        };
+        sessionStorage.setItem(
+          "secondStepData",
+          JSON.stringify(secondStepData)
+        );
+      }
     }
+    dispatch(setEditing(true));
   };
 
   return (
@@ -85,13 +89,6 @@ const ItemPage: React.FC = () => {
                     alt={type}
                   />
                 </div>
-              );
-            } else if (type === "year") {
-              return (
-                <p key={type} className={s.itemInfo}>
-                  <strong>{type}:</strong>
-                  <span> {value["year-from"] + "-" + value["year-to"]}</span>
-                </p>
               );
             } else {
               return (

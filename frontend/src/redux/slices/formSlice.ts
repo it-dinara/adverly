@@ -12,7 +12,7 @@ export const initialState: FormState = {
       category: Categories.AUTO,
       brand: "",
       model: "",
-      year: { "year-from": 0, "year-to": 0 },
+      year: undefined,
       mileage: undefined,
     },
   },
@@ -59,13 +59,22 @@ const unifiedFormSlice = createSlice({
       action: PayloadAction<
         Pick<
           FormData,
-          "id" | "name" | "description" | "location" | "photo" | "category" | "auto"
+          | "id"
+          | "name"
+          | "description"
+          | "location"
+          | "photo"
+          | "category"
+          | "auto"
         >
       >
     ) {
       state.isEditing = true;
       state.step = 2;
       state.formData = action.payload;
+    },
+    setEditing(state, action: PayloadAction<boolean>) {
+      state.isEditing = action.payload;
     },
   },
 });
@@ -77,12 +86,12 @@ export const {
   resetForm,
   setItemToEdit,
   updateAutoField,
+  setEditing,
 } = unifiedFormSlice.actions;
 
 export default unifiedFormSlice.reducer;
 export const selectFormData = (state: { form: FormState }) =>
   state.form.formData;
-
 
 export const selectAuto = (state: { form: FormState }) =>
   state.form.formData.auto;
