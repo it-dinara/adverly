@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useAppDispatch } from "Redux/hooks";
+import { useAppDispatch, useAppSelector } from "Redux/hooks";
 import { updateStep, updatePhoto } from "Redux/slices/formSlice";
 import s from "./BasicStepForm.module.css";
 import { Categories } from "Types/form";
@@ -20,8 +20,9 @@ const formSchema = z.object({
 // Выводим типы на основе схемы
 type FormValues = z.infer<typeof formSchema>;
 
-const BasicStepForm: React.FC<{ isEditing: boolean }> = ({ isEditing }) => {
+const BasicStepForm: React.FC = () => {
   const dispatch = useAppDispatch();
+  const isEditing = useAppSelector((state) => state.form.isEditing);
 
   // Инициализируем react-hook-form с использованием zodResolver
   const formData = sessionStorage.getItem("firstStepData");
@@ -147,11 +148,11 @@ const BasicStepForm: React.FC<{ isEditing: boolean }> = ({ isEditing }) => {
         </label>
         <select className={s.select} id="category" {...register("category")}>
           <option value="">Выберите категорию *</option>
-          <option value={Categories.REAL_ESTATE}>
-            {Categories.REAL_ESTATE}
-          </option>
-          <option value={Categories.AUTO}>{Categories.AUTO}</option>
-          <option value={Categories.SERVICES}>{Categories.SERVICES}</option>
+          {Object.values(Categories).map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
         </select>
         {errors.category && (
           <div className={s.error}>{errors.category.message}</div>

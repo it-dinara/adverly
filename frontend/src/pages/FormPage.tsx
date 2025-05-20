@@ -37,8 +37,8 @@ const FormPage = () => {
   return (
     <div className={s.container}>
       <div className={s.wrap}>
-        <BasicStepForm isEditing={isEditing} />
-        <CategoryStepForm isEditing={isEditing} />
+        <BasicStepForm />
+        <CategoryStepForm />
       </div>
 
       <h2>{items.length > 0 && `Items`}</h2>

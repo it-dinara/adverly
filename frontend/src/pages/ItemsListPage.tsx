@@ -85,7 +85,7 @@ const ItemsListPage: React.FC = () => {
 
   return (
     <div className={s.container}>
-      <h1 className={s.title}>Items List</h1>
+      <h1 className={s.title}>Список объявлений</h1>
       {error && <p className={s.errorMessage}>{error}</p>}
 
       <div className={s.filterContainer}>
@@ -143,30 +143,42 @@ const ItemsListPage: React.FC = () => {
       </button>
 
       {filteredItems.length > 0 ? (
-        <div>
+        <section className={s.itemsSection}>
           <ul className={s.itemsList}>
             {filteredItems.map((item) => (
               <li key={item.id} className={s.itemCard}>
-                <Link to={`/items/${item.id}`} className={s.itemLink}>
-                  Открыть
-                </Link>
-                <h2 className={s.itemTitle}>{item.name}</h2>
-                <p className={s.itemDescription}>
-                  <strong>Description:</strong> {item.description}
-                </p>
-                <p className={s.itemLocation}>
-                  <strong>Location:</strong> {item.location}
-                </p>
-                <p className={s.itemType}>
-                  <strong>Type:</strong> {item.type}
-                </p>
+                <article className={s.itemContainer}>
+                  <div className={s.imageContainer}>
+                    <img
+                      className={s.image}
+                      src={
+                        item.photo && Object.keys(item.photo).length
+                          ? item.photo
+                          : "/assets/images/placeholder.png"
+                      }
+                      alt={item.name}
+                    />
+                  </div>
+                  <div className={s.itemDetails}>
+                    <h2 className={s.itemTitle}>{item.name}</h2>
+                    <p className={s.itemLocation}>
+                      <strong>Локация:</strong> {item.location}
+                    </p>
+                    <p className={s.itemCategory}>
+                      <strong>Категория:</strong> {item.category}
+                    </p>
+                  </div>
+                  <Link to={`/items/${item.id}`} className={s.itemLink}>
+                    Открыть
+                  </Link>
+                </article>
               </li>
             ))}
           </ul>
           <div className={s.paginationContainer}>
             <Pagination />
           </div>
-        </div>
+        </section>
       ) : (
         !error && <p className={s.noItemsMessage}>No items found.</p>
       )}

@@ -7,15 +7,11 @@ export const Categories = {
 export type CategoriesType = typeof Categories;
 export type CategoryKeysType = CategoriesType[keyof CategoriesType] | undefined;
 
-export interface Item {
-  id: string;
-  name: string;
-  description: string;
-  location: string;
+export interface FormState {
+  formData: FormData;
+  step: number;
+  isEditing: boolean;
   category: CategoryKeysType;
-  photo?: File | null | undefined;
-  [key: string]: any;
-  auto: CarFormData;
 }
 
 export interface FormData {
@@ -39,18 +35,23 @@ export interface FormData {
   auto: CarFormData;
 }
 
+export interface Item {
+  id: string;
+  name: string;
+  description: string;
+  location: string;
+  category: CategoryKeysType;
+  photo?: File | null | undefined;
+  [key: string]: any;
+  auto: CarFormData;
+}
+
 export interface CarFormData {
   category: CategoriesType["AUTO"];
   brand: string; // Auto
   model: string;
   mileage?: number;
   [key: string]: any;
-}
-
-export interface FormState {
-  formData: FormData;
-  step: number;
-  isEditing: boolean;
 }
 
 // Define types for car data

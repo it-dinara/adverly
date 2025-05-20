@@ -13,6 +13,7 @@ module.exports = {
       Redux: path.resolve(__dirname, "src/redux"),
       AxiosInstance: path.resolve(__dirname, "src/axios-adverly.ts"),
       Types: path.resolve(__dirname, "src/types"),
+      Categories: path.resolve(__dirname, "src/components/Categories"),
     },
     extensions: [".ts", ".tsx", ".js"],
   },

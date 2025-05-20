@@ -83,7 +83,7 @@ const ItemPage: React.FC = () => {
                     className={s.image}
                     src={
                       value && Object.entries(value).length === 0
-                        ? "/todo заглушку поставить"
+                        ? "/assets/images/placeholder.png"
                         : value
                     }
                     alt={type}
@@ -100,11 +100,11 @@ const ItemPage: React.FC = () => {
           })}
         </div>
       )}
-      <button type="button" className={s.editButton} onClick={handleEdit}>
-        <Link to={`/form`} className={s.editLink}>
+      <Link to={`/form`} className={s.editLink}>
+        <button type="button" className={s.editButton} onClick={handleEdit}>
           Редактировать
-        </Link>
-      </button>
+        </button>
+      </Link>
     </div>
   );
 };

@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import s from "./CategoryStepForm.module.css";
+import s from "./Auto.module.css";
 import { Categories, Car } from "Types/form";
 import axiosInstance from "AxiosInstance";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useAppSelector } from "Redux/hooks";
 
 const carMileage = [
   5000, 15000, 30000, 50000, 75000, 100000, 150000, 200000, 250000, 300000,
@@ -28,9 +29,11 @@ const autoCategorySchema = z.object({
 
 type AutoFormValues = z.infer<typeof autoCategorySchema>;
 
-const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
+const Auto: React.FC = () => {
   const navigate = useNavigate();
   const [carBrands, setCarBrands] = useState<Car[]>([]);
+
+  const isEditing = useAppSelector((state) => state.form.isEditing);
 
   useEffect(() => {
     const fetchCarBrands = async () => {
@@ -48,9 +51,7 @@ const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
     register,
     handleSubmit,
     setValue,
-    control,
     watch,
-    resetField,
     formState: { errors },
   } = useForm<AutoFormValues>({
     resolver: zodResolver(autoCategorySchema),
@@ -110,9 +111,7 @@ const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
       className={s.form}
       onSubmit={handleSubmit(onSubmit, (errors: any) => onInvalid(errors))}
     >
-      <h2 className={s.heading}>
-        {isEditing ? "Редактирование объявления" : "Категорийный шаг"}
-      </h2>
+      <h2 className={s.heading}>{"Авто"}</h2>
       {Categories.AUTO && (
         <>
           <div className={s.formGroup}>
@@ -222,4 +221,4 @@ const CategoryStepForm: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
   );
 };
 
-export default CategoryStepForm;
+export default Auto;

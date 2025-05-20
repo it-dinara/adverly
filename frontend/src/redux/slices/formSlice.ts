@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { FormData, FormState, Categories } from "Types/form";
+import { FormData, FormState, Categories, CategoryKeysType } from "Types/form";
 
 export const initialState: FormState = {
   formData: {
@@ -7,7 +7,7 @@ export const initialState: FormState = {
     description: "",
     location: "",
     photo: null,
-    category: Categories.AUTO || Categories.REAL_ESTATE || Categories.SERVICES,
+    category: undefined,
     auto: {
       category: Categories.AUTO,
       brand: "",
@@ -18,6 +18,7 @@ export const initialState: FormState = {
   },
   step: 1,
   isEditing: false,
+  category: undefined,
 };
 
 const unifiedFormSlice = createSlice({
@@ -75,6 +76,9 @@ const unifiedFormSlice = createSlice({
     },
     setEditing(state, action: PayloadAction<boolean>) {
       state.isEditing = action.payload;
+    },
+    setCategory(state, action: PayloadAction<CategoryKeysType>) {
+      state.category = action.payload;
     },
   },
 });
