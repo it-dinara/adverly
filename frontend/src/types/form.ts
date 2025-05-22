@@ -1,3 +1,5 @@
+// src/types/form.ts
+
 export const Categories = {
   REAL_ESTATE: "Недвижимость",
   AUTO: "Авто",
@@ -5,34 +7,49 @@ export const Categories = {
 } as const;
 
 export type CategoriesType = typeof Categories;
-export type CategoryKeysType = CategoriesType[keyof CategoriesType] | undefined;
+export type CategoryKeysType = CategoriesType[keyof CategoriesType];
 
 export interface FormState {
-  formData: FormData;
+  firstStep: FirstStep;
   step: number;
   isEditing: boolean;
   category: CategoryKeysType;
+  auto: AutoData;
+  realEstate: RealEstateData;
+  service: ServiceData;
 }
 
-export interface FormData {
+export interface FirstStep {
   id?: string; // Added ID for identification
   name: string;
   description: string;
   location: string;
   photo?: File | null;
   category: CategoryKeysType;
-  //
-  propertyType?: string; // Real estate
-  area?: number;
-  rooms?: number;
-  price?: number;
-  serviceType?: string; // Services
-  experience?: number;
-  cost?: number;
+  [key: string]: any;
+}
+
+export interface ServiceData {
+  serviceType: string;
+  experience: number;
+  cost: number;
   schedule?: string;
   [key: string]: any;
-  // Auto
-  auto: CarFormData;
+}
+
+export interface RealEstateData {
+  propertyType: string;
+  area: number;
+  rooms: number;
+  price: number;
+}
+
+export interface AutoData {
+  brand: string; // Auto
+  model: string;
+  mileage?: number;
+  year: number;
+  id?: string; // Added ID for identification
 }
 
 export interface Item {
@@ -43,19 +60,11 @@ export interface Item {
   category: CategoryKeysType;
   photo?: File | null | undefined;
   [key: string]: any;
-  auto: CarFormData;
-}
-
-export interface CarFormData {
-  category: CategoriesType["AUTO"];
-  brand: string; // Auto
-  model: string;
-  mileage?: number;
-  [key: string]: any;
+  auto: AutoData;
 }
 
 // Define types for car data
-interface CarModel {
+export interface CarModel {
   id: string;
   name: string;
   year: number;

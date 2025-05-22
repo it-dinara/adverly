@@ -3,12 +3,12 @@ import axios from "axios";
 import axiosInstance from "../../axios-adverly";
 
 interface ItemState {
-  item: Item;
+  itemDetails: ItemDetails;
   loading: boolean;
   error: string | null;
 }
 
-interface Item {
+interface ItemDetails {
   id: string;
   title: string;
   description: string;
@@ -16,7 +16,7 @@ interface Item {
 }
 
 const initialState: ItemState = {
-  item: {
+  itemDetails: {
     id: "",
     title: "",
     description: "",
@@ -27,11 +27,11 @@ const initialState: ItemState = {
 };
 
 // Асинхронное получение данных объявления
-export const fetchItem = createAsyncThunk<Item, string>(
+export const fetchItem = createAsyncThunk<ItemDetails, string>(
   "Item/fetchItem",
-  async (id: string): Promise<Item> => {
+  async (id: string): Promise<ItemDetails> => {
     console.log("suka bleat");
-    const response = await axios.get<Item>(
+    const response = await axios.get<ItemDetails>(
       `${axiosInstance}/api/Items/${id}`
     );
     return response.data;
@@ -43,7 +43,7 @@ const ItemSlice = createSlice({
   initialState,
   reducers: {
     updateItem(state, action) {
-      state.item = action.payload;
+      state.itemDetails = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -54,7 +54,7 @@ const ItemSlice = createSlice({
       })
       .addCase(fetchItem.fulfilled, (state, { payload }) => {
         state.loading = false;
-        state.item = payload;
+        state.itemDetails = payload;
       })
       .addCase(fetchItem.rejected, (state, action) => {
         state.loading = false;

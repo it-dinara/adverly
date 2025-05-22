@@ -14,6 +14,7 @@ module.exports = {
       AxiosInstance: path.resolve(__dirname, "src/axios-adverly.ts"),
       Types: path.resolve(__dirname, "src/types"),
       Categories: path.resolve(__dirname, "src/components/Categories"),
+      Utils: path.resolve(__dirname, "src/utils"),
     },
     extensions: [".ts", ".tsx", ".js"],
   },

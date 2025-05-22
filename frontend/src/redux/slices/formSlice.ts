@@ -1,65 +1,81 @@
+// src/redux/slices/formSlice.ts
+
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { FormData, FormState, Categories, CategoryKeysType } from "Types/form";
+import {
+  FirstStep,
+  FormState,
+  Categories,
+  AutoData,
+  RealEstateData,
+  ServiceData,
+} from "Types/form";
 
 export const initialState: FormState = {
-  formData: {
+  firstStep: {
+    id: undefined,
     name: "",
     description: "",
     location: "",
     photo: null,
-    category: undefined,
-    auto: {
-      category: Categories.AUTO,
-      brand: "",
-      model: "",
-      year: undefined,
-      mileage: undefined,
-    },
+    category: Categories.AUTO, // Use a single default value
+  },
+  auto: {
+    brand: "",
+    model: "",
+    year: 0,
+    mileage: undefined,
+  },
+  realEstate: {
+    propertyType: "",
+    area: 0,
+    rooms: 0,
+    price: 0,
+  },
+  service: {
+    serviceType: "",
+    experience: 0,
+    cost: 0,
+    schedule: "",
   },
   step: 1,
   isEditing: false,
-  category: undefined,
+  category: Categories.AUTO, // Default category
 };
 
 const unifiedFormSlice = createSlice({
   name: "form",
   initialState,
   reducers: {
-    updateField<T extends keyof FormData>(
+    updateData<T extends keyof FormState>(
       state: FormState,
-      action: PayloadAction<{ field: T; value: FormData[T] }>
+      action: PayloadAction<{ field: T; value: FormState[T] }>
     ) {
       const { field, value } = action.payload;
-      state.formData[field] = value;
+      state[field] = value;
       if (field === "category") {
-        state.step = 1; // Reset step when category changes
+        state.step = 1; // Reset step if the category changes
       }
     },
-    updateAutoField<T extends keyof FormData["auto"]>(
-      state: FormState,
-      action: PayloadAction<{ field: T; value: FormData["auto"][T] }>
-    ) {
-      const { field, value } = action.payload;
-      if (state.formData.auto) {
-        state.formData.auto[field] = value;
-      }
-    },
+    // Update the photo field
     updatePhoto(state, action: PayloadAction<File | null>) {
-      state.formData.photo = action.payload;
+      state.firstStep.photo = action.payload;
     },
+    // Update the current step number
     updateStep(state, action: PayloadAction<number>) {
       state.step = action.payload;
     },
+    // Reset all form values to their initial state
     resetForm(state) {
-      state.formData = initialState.formData;
+      state.firstStep = initialState.firstStep;
       state.step = initialState.step;
       state.isEditing = initialState.isEditing;
     },
+    // Set an item for editing (only using a subset of FirstStep keys)
     setItemToEdit(
       state,
       action: PayloadAction<
         Pick<
-          FormData,
+          FirstStep,
           | "id"
           | "name"
           | "description"
@@ -72,30 +88,26 @@ const unifiedFormSlice = createSlice({
     ) {
       state.isEditing = true;
       state.step = 2;
-      state.formData = action.payload;
+      state.firstStep = action.payload as FirstStep;
     },
+    // Toggle the editing mode
     setEditing(state, action: PayloadAction<boolean>) {
       state.isEditing = action.payload;
-    },
-    setCategory(state, action: PayloadAction<CategoryKeysType>) {
-      state.category = action.payload;
     },
   },
 });
 
 export const {
-  updateField,
+  updateData,
   updatePhoto,
   updateStep,
   resetForm,
   setItemToEdit,
-  updateAutoField,
   setEditing,
 } = unifiedFormSlice.actions;
 
 export default unifiedFormSlice.reducer;
-export const selectFormData = (state: { form: FormState }) =>
-  state.form.formData;
 
-export const selectAuto = (state: { form: FormState }) =>
-  state.form.formData.auto;
+// Selectors for accessing form data and nested "auto" data
+export const selectFirstStep = (state: { form: FormState }) =>
+  state.form.firstStep;

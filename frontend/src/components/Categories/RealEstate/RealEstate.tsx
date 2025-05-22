@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import s from "./RealEstate.module.css";
 import axiosInstance from "AxiosInstance";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useAppSelector, useAppDispatch } from "Redux/hooks";
+import debounce from "Utils/debounce";
+import { updateData } from "Redux/slices/formSlice";
 
 const propertyTypes = [
   "Квартира",
@@ -22,13 +24,14 @@ const realEstateSchema = z.object({
     .number()
     .positive("Количество комнат должно быть положительным числом"),
   price: z.coerce.number().positive("Цена должна быть положительным числом"),
-  id: z.string().optional(),
 });
 
 type RealEstateFormValues = z.infer<typeof realEstateSchema>;
 
 const RealEstate: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const firstStepData = useAppSelector((state) => state.form.firstStep);
 
   const {
     register,
@@ -41,45 +44,53 @@ const RealEstate: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
     defaultValues: {},
   });
 
+  const realEstateData = useAppSelector((state) => state.form.realEstate);
+  //populate the form with data from redux
+  useEffect(() => {
+    if (realEstateData) {
+      (Object.keys(realEstateData) as (keyof RealEstateFormValues)[]).forEach(
+        (key) => {
+          setValue(key, realEstateData[key]);
+        }
+      );
+    }
+  }, [setValue]);
+
+  // Subscribe to form changes and update Redux accordingly
+  useEffect(() => {
+    const debouncedUpdate = debounce((cleanedData: RealEstateFormValues) => {
+      dispatch(updateData({ field: "realEstate", value: cleanedData }));
+    }, 1000);
+    const subscription = watch((data) => {
+      const cleanedData = {
+        propertyType: data.propertyType ?? "",
+        area: data.area as number,
+        rooms: data.rooms as number,
+        price: data.price as number,
+      };
+      if (cleanedData) {
+        debouncedUpdate(cleanedData);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
+
   const onSubmit = async (data: RealEstateFormValues) => {
-    const firstStepSessionStorage = sessionStorage.getItem("firstStepData");
-    const firstStepData = JSON.parse(firstStepSessionStorage || "{}");
+    const formData = {
+      ...firstStepData,
+      ...data,
+    };
     try {
       if (isEditing) {
-        await axiosInstance.put(`/items/${firstStepData.id}`, {
-          ...firstStepData,
-          ...data,
-        });
+        await axiosInstance.put(`/items/${firstStepData.id}`, formData);
       } else {
-        await axiosInstance.post(`/items`, { ...firstStepData, ...data });
+        await axiosInstance.post(`/items`, formData);
       }
       navigate(`/list`);
     } catch (error) {
       console.error("Error submitting item:", error);
     }
   };
-
-  useEffect(() => {
-    const storedData = sessionStorage.getItem("secondStepData");
-    if (storedData) {
-      const parsedData = JSON.parse(storedData);
-      Object.keys(parsedData).forEach((key) => {
-        setValue(key as keyof RealEstateFormValues, parsedData[key]);
-      });
-    }
-    return () => {
-      if (isEditing === false) {
-        sessionStorage.removeItem("secondStepData");
-      }
-    };
-  }, [setValue]);
-
-  useEffect(() => {
-    const subscription = watch((values) => {
-      sessionStorage.setItem("secondStepData", JSON.stringify(values));
-    });
-    return () => subscription.unsubscribe();
-  }, [watch]);
 
   return (
     <form className={s.form} onSubmit={handleSubmit(onSubmit)}>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import BasicStepForm from "../components/Steps/BasicStepForm/BasicStepForm";
+import BasicStepForm from "../components/Steps/FirstStep/FirstStep";
 import CategoryStepForm from "../components/Steps/SecondStep/SecondStepForm";
 import { useAppSelector } from "Redux/hooks";
 import { Link } from "react-router-dom";

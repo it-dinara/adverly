@@ -3,11 +3,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import s from "./Auto.module.css";
-import { Categories, Car } from "Types/form";
+import { Categories, Car, RealEstateData } from "Types/form";
 import axiosInstance from "AxiosInstance";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useAppSelector } from "Redux/hooks";
+import { useAppSelector, useAppDispatch } from "Redux/hooks";
+import debounce from "Utils/debounce";
+import { updateData } from "Redux/slices/formSlice";
 
 const carMileage = [
   5000, 15000, 30000, 50000, 75000, 100000, 150000, 200000, 250000, 300000,
@@ -31,21 +33,11 @@ type AutoFormValues = z.infer<typeof autoCategorySchema>;
 
 const Auto: React.FC = () => {
   const navigate = useNavigate();
-  const [carBrands, setCarBrands] = useState<Car[]>([]);
-
+  const dispatch = useAppDispatch();
   const isEditing = useAppSelector((state) => state.form.isEditing);
-
-  useEffect(() => {
-    const fetchCarBrands = async () => {
-      try {
-        const { data } = await axios.get<Car[]>(`/cars.json`);
-        setCarBrands(data);
-      } catch (error) {
-        console.error("Error fetching car data:", error);
-      }
-    };
-    fetchCarBrands();
-  }, []);
+  const [carBrands, setCarBrands] = useState<Car[]>([]);
+  const autoData = useAppSelector((state) => state.form.auto);
+  const firstStepData = useAppSelector((state) => state.form.firstStep);
 
   const {
     register,
@@ -58,48 +50,63 @@ const Auto: React.FC = () => {
     defaultValues: {},
   });
 
+  useEffect(() => {
+    const fetchCarBrands = async () => {
+      try {
+        const { data } = await axios.get<Car[]>(`/cars.json`);
+        setCarBrands(data);
+      } catch (error) {
+        console.error("Error fetching car data:", error);
+      }
+    };
+    fetchCarBrands();
+  }, []);
+  // Load stored values when the component mounts
+  useEffect(() => {
+    if (autoData) {
+      const autoDataKeys = Object.keys(autoData) as (keyof typeof autoData)[];
+      autoDataKeys.forEach((key) => {
+        setValue(key, autoData[key]);
+      });
+    }
+  }, [setValue]);
+
+  // Subscribe to form changes and update Redux accordingly
+  useEffect(() => {
+    const debouncedUpdate = debounce((cleanedData: AutoFormValues) => {
+      dispatch(updateData({ field: "auto", value: cleanedData }));
+    }, 1000);
+    const subscription = watch((data) => {
+      const cleanedData = {
+        brand: data.brand ?? "",
+        model: data.model ?? "",
+        year: data.year as number,
+        mileage: data.mileage as number,
+        id: data.id ?? "",
+      };
+      if (cleanedData) {
+        debouncedUpdate(cleanedData);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
+
   const onSubmit = async (data: AutoFormValues) => {
-    const firstStepSessionStorage = sessionStorage.getItem("firstStepData");
-    const firstStepData = JSON.parse(firstStepSessionStorage || "{}");
+    const formData = {
+      ...firstStepData,
+      ...data,
+    };
     try {
       if (isEditing) {
-        await axiosInstance.put(`/items/${firstStepData.id}`, {
-          ...firstStepData,
-          ...data,
-        });
+        await axiosInstance.put(`/items/${firstStepData.id}`, formData);
       } else {
-        await axiosInstance.post(`/items`, { ...firstStepData, ...data });
+        await axiosInstance.post(`/items`, formData);
       }
       navigate(`/list`);
     } catch (error) {
       console.error("Error submitting item:", error);
     }
   };
-
-  // Load stored values when the component mounts
-  useEffect(() => {
-    const storedData = sessionStorage.getItem("secondStepData");
-    if (storedData) {
-      const parsedData = JSON.parse(storedData);
-      Object.keys(parsedData).forEach((key) => {
-        setValue(key as keyof AutoFormValues, parsedData[key]);
-      });
-    }
-    return () => {
-      // Clear sessionStorage when the component unmounts
-      if (isEditing === false) {
-        sessionStorage.removeItem("secondStepData");
-      }
-    };
-  }, [setValue]);
-
-  // Watch form values and store them in sessionStorage
-  useEffect(() => {
-    const subscription = watch((values) => {
-      sessionStorage.setItem("secondStepData", JSON.stringify(values));
-    });
-    return () => subscription.unsubscribe();
-  }, [watch]);
 
   const onInvalid = (errors: any) =>
     console.error("Validation Errors:", errors);
@@ -152,7 +159,6 @@ const Auto: React.FC = () => {
               {/* Filter car brands based on the selected brand */}
               {carBrands
                 .find((car) => {
-                  console.log("Car:", car);
                   return car.name === selectedBrand;
                 })
                 ?.models?.map((m) => {

@@ -3,18 +3,16 @@ import { Categories } from "Types/form";
 import Auto from "Categories/Auto/Auto";
 import RealEstate from "Categories/RealEstate/RealEstate";
 import Services from "Categories/Service/Service";
+import { useAppSelector } from "Redux/hooks";
 
 const CategoryStepForm: React.FC = () => {
-  let categoryForm = null;
-  const category = sessionStorage.getItem("firstStepData");
-  const parsedCategory = category ? JSON.parse(category) : null;
-  const categoryName = parsedCategory?.category;
-
-  if (categoryName === Categories.AUTO) {
+  const selectedCategory = useAppSelector((state) => state.form.firstStep.category);
+  let categoryForm: React.ReactElement | null = null;
+  if (selectedCategory === Categories.AUTO) {
     categoryForm = <Auto />;
-  } else if (categoryName === Categories.REAL_ESTATE) {
+  } else if (selectedCategory === Categories.REAL_ESTATE) {
     categoryForm = <RealEstate />;
-  } else if (categoryName === Categories.SERVICES) {
+  } else if (selectedCategory === Categories.SERVICES) {
     categoryForm = <Services />;
   }
   return <>{categoryForm}</>;

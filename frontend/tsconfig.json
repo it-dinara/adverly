@@ -12,7 +12,8 @@
       "AxiosInstance": ["src/axios-adverly.ts"],
       "Pages/*": ["src/pages/*"],
       "Types/*": ["src/types/*"],
-      "Categories/*": ["src/components/Categories/*"]
+      "Categories/*": ["src/components/Categories/*"],
+      "Utils/*": ["src/utils/*"]
     },
     "plugins": [
       {
@@ -25,6 +26,6 @@
       { "name": "typescript-plugin-css-modules" }
     ]
   },
-  "include": ["src/**/*", "src/index.tsx"],
+  "include": ["src/**/*", "src/index.tsx", "src/utils"],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }

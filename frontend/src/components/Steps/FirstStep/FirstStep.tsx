@@ -3,29 +3,27 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAppDispatch, useAppSelector } from "Redux/hooks";
-import { updateStep, updatePhoto } from "Redux/slices/formSlice";
-import s from "./BasicStepForm.module.css";
-import { Categories } from "Types/form";
+import { updateStep, updatePhoto, updateData } from "Redux/slices/formSlice";
+import s from "./FirstStep.module.css";
+import { Categories, CategoryKeysType } from "Types/form";
+import debounce from "Utils/debounce";
 
-// Определяем схему валидации формы с помощью Zod
+// Define the validation schema via Zod
 const formSchema = z.object({
   name: z.string().min(1, "Название обязательно"),
   description: z.string().min(1, "Описание обязательно"),
   location: z.string().min(1, "Локация обязательна"),
-  // Поле "photo" опциональное: если пользователь выбрал файл, оно должно быть экземпляром File
   photo: z.instanceof(File).optional().nullable(),
-  category: z.string().min(1, "Категория обязательна"),
+  category: z.nativeEnum(Categories, { message: "Категория обязательна" }),
 });
 
-// Выводим типы на основе схемы
 type FormValues = z.infer<typeof formSchema>;
 
-const BasicStepForm: React.FC = () => {
+const FirstStep: React.FC = () => {
   const dispatch = useAppDispatch();
   const isEditing = useAppSelector((state) => state.form.isEditing);
+  const firstStep = useAppSelector((state) => state.form.firstStep);
 
-  // Инициализируем react-hook-form с использованием zodResolver
-  const formData = sessionStorage.getItem("firstStepData");
   const {
     register,
     handleSubmit,
@@ -34,42 +32,48 @@ const BasicStepForm: React.FC = () => {
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: formData ? JSON.parse(formData) : {}, // Set initial form default values from the store
+    defaultValues: firstStep,
+    mode: "onBlur",
   });
 
-  // Обработчик выбора файла (фото)
+  // Fill the form with Redux data after mounting
+  useEffect(() => {
+    if (firstStep) {
+      (Object.keys(firstStep) as (keyof FormValues)[]).forEach((key) => {
+        setValue(key, firstStep[key]);
+      });
+    }
+  }, [setValue]);
+
+  // Handler for file input changes
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
-    // Устанавливаем значение поля "photo" в форму
     setValue("photo", file, { shouldValidate: true });
-    // Опционально обновляем Redux, если требуется хранение фото в глобальном состоянии
     dispatch(updatePhoto(file));
   };
 
-  // Load stored values when the component mounts
+  // Subscribe to form changes and update Redux accordingly
   useEffect(() => {
-    const storedData = sessionStorage.getItem("firstStepData");
-    if (storedData) {
-      const parsedData = JSON.parse(storedData);
-      Object.keys(parsedData).forEach((key) => {
-        setValue(key as keyof FormValues, parsedData[key]);
-      });
-    }
-    return () => {
-      // Clear sessionStorage when the component unmounts
-      if (isEditing === false) {
-        sessionStorage.removeItem("firstStepData");
-      }
-    };
-  }, [setValue]);
+    // Debounce the dispatch function so it doesn't fire on every keystroke
+    const debouncedUpdate = debounce((cleanedData: FormValues) => {
+      dispatch(updateData({ field: "firstStep", value: cleanedData }));
+    }, 1000);
 
-  // Watch form values and store them in sessionStorage
-  useEffect(() => {
     const subscription = watch((data) => {
-      sessionStorage.setItem("firstStepData", JSON.stringify(data));
+      // Ensure all required fields are present and not undefined
+      const cleanedData = {
+        name: data.name ?? "",
+        description: data.description ?? "",
+        location: data.location ?? "",
+        photo: data.photo ?? null,
+        category: data.category as CategoryKeysType, // Ensure correct type and not undefined
+      };
+      if (cleanedData) {
+        debouncedUpdate(cleanedData);
+      }
     });
     return () => subscription.unsubscribe();
-  }, [watch]);
+  }, [watch, dispatch]);
 
   const onSubmit = (data: FormValues) => {
     dispatch(updateStep(2));
@@ -158,12 +162,8 @@ const BasicStepForm: React.FC = () => {
           <div className={s.error}>{errors.category.message}</div>
         )}
       </div>
-
-      <button className={s.button} type="submit">
-        Далее
-      </button>
     </form>
   );
 };
 
-export default BasicStepForm;
+export default FirstStep;
