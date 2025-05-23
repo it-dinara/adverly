@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "Redux/hooks";
 import Pagination from "../components/Pagination/Pagination";
 import { fetchItems } from "Redux/slices/itemsListSlice";
-import { setEditing } from "Redux/slices/formSlice";
+import { setEditing, resetForm } from "Redux/slices/formSlice";
 import { Categories, FilterOptionsType } from "Types/form";
 import s from "./ItemsListPage.module.css";
 
@@ -35,9 +35,7 @@ const ItemsListPage: React.FC = () => {
 
   useEffect(() => {
     dispatch(fetchItems());
-    dispatch(setEditing(false)); // Сброс состояния редактирования при загрузке страницы
-    sessionStorage.removeItem("firstStepData");
-    sessionStorage.removeItem("secondStepData");
+    dispatch(resetForm()); // Сброс формы
   }, [dispatch]);
 
   const [filteredItems, setFilteredItems] = useState(items);
@@ -136,11 +134,11 @@ const ItemsListPage: React.FC = () => {
         />
       </div>
 
-      <button type="button" className={s.submitButton}>
-        <Link to={`/form`} className={s.submitButtonLink}>
+      <Link to={`/form`} className={s.submitButtonLink}>
+        <button type="button" className={s.submitButton}>
           Разместить объявление
-        </Link>
-      </button>
+        </button>
+      </Link>
 
       {filteredItems.length > 0 ? (
         <section className={s.itemsSection}>

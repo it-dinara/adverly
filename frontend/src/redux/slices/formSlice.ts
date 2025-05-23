@@ -1,14 +1,7 @@
 // src/redux/slices/formSlice.ts
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import {
-  FirstStep,
-  FormState,
-  Categories,
-  AutoData,
-  RealEstateData,
-  ServicesData,
-} from "Types/form";
+import { FormState, Categories } from "Types/form";
 
 export const initialState: FormState = {
   id: undefined,
@@ -65,10 +58,8 @@ const unifiedFormSlice = createSlice({
       state.step = action.payload;
     },
     // Reset all form values to their initial state
-    resetForm(state) {
-      state.firstStep = initialState.firstStep;
-      state.step = initialState.step;
-      state.isEditing = initialState.isEditing;
+    resetForm() {
+      return initialState;
     },
     // Toggle the editing mode
     setEditing(state, action: PayloadAction<boolean>) {
@@ -77,13 +68,8 @@ const unifiedFormSlice = createSlice({
   },
 });
 
-export const {
-  updateData,
-  updatePhoto,
-  updateStep,
-  resetForm,
-  setEditing,
-} = unifiedFormSlice.actions;
+export const { updateData, updatePhoto, updateStep, resetForm, setEditing } =
+  unifiedFormSlice.actions;
 
 export default unifiedFormSlice.reducer;
 

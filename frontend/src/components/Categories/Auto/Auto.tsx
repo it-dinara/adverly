@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import s from "./Auto.module.css";
-import { Categories, Car, RealEstateData } from "Types/form";
+import { Categories, Car } from "Types/form";
 import axiosInstance from "AxiosInstance";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -34,10 +34,9 @@ type AutoFormValues = z.infer<typeof autoCategorySchema>;
 const Auto: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const {isEditing, id} = useAppSelector((state) => state.form);
+  const { isEditing, id, firstStep } = useAppSelector((state) => state.form);
   const [carBrands, setCarBrands] = useState<Car[]>([]);
   const autoData = useAppSelector((state) => state.form.AUTO);
-  const firstStepData = useAppSelector((state) => state.form.firstStep);
 
   const {
     register,
@@ -61,6 +60,7 @@ const Auto: React.FC = () => {
     };
     fetchCarBrands();
   }, []);
+
   // Load stored values when the component mounts
   useEffect(() => {
     if (autoData) {
@@ -93,12 +93,12 @@ const Auto: React.FC = () => {
 
   const onSubmit = async (data: AutoFormValues) => {
     const formData = {
-      ...firstStepData,
+      ...firstStep,
       ...data,
     };
     try {
       if (isEditing) {
-        console.log("Editing item with ID:", firstStepData, "id", id);
+        console.log("Editing item with ID:", firstStep, "id", id);
         await axiosInstance.put(`/items/${id}`, formData);
       } else {
         await axiosInstance.post(`/items`, formData);

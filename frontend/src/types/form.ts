@@ -34,7 +34,6 @@ export interface ServicesData {
   experience: number;
   cost: number;
   schedule?: string;
-  [key: string]: any;
 }
 
 export interface RealEstateData {

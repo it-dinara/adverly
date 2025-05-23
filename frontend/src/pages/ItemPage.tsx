@@ -70,7 +70,7 @@ const ItemPage: React.FC = () => {
     );
   });
 
-  let photo = item && (
+  let photo = item && item.auto && (
     <div className={s.imageContainer} key={"photo"}>
       <img
         className={s.image}

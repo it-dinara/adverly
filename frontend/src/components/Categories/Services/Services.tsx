@@ -2,9 +2,10 @@ import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import s from "./Service.module.css";
+import s from "./Services.module.css";
 import axiosInstance from "AxiosInstance";
 import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "Redux/hooks";
 
 const serviceTypes = [
   "Ремонт",
@@ -14,7 +15,7 @@ const serviceTypes = [
   "Стрижка",
 ];
 
-const serviceSchema = z.object({
+const servicesSchema = z.object({
   serviceType: z.string().min(1, "Тип услуги обязателен"),
   experience: z.coerce
     .number()
@@ -23,12 +24,12 @@ const serviceSchema = z.object({
     .number()
     .positive("Стоимость должна быть положительным числом"),
   schedule: z.string().optional(),
-  id: z.string().optional(),
+  id: z.number().optional(),
 });
 
-type ServiceFormValues = z.infer<typeof serviceSchema>;
+type ServicesFormValues = z.infer<typeof servicesSchema>;
 
-const Service: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
+const Services: React.FC = () => {
   const navigate = useNavigate();
 
   const {
@@ -37,43 +38,41 @@ const Service: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
     setValue,
     watch,
     formState: { errors },
-  } = useForm<ServiceFormValues>({
-    resolver: zodResolver(serviceSchema),
+  } = useForm<ServicesFormValues>({
+    resolver: zodResolver(servicesSchema),
     defaultValues: {},
   });
 
-  const onSubmit = async (data: ServiceFormValues) => {
-    const firstStepSessionStorage = sessionStorage.getItem("firstStepData");
-    const firstStepData = JSON.parse(firstStepSessionStorage || "{}");
+  const { firstStep, id, isEditing } = useAppSelector((state) => state.form);
+  const servicesData = useAppSelector((state) => state.form.SERVICES);
+
+  // Load stored values when the component mounts
+  useEffect(() => {
+    if (servicesData) {
+      const servicesDataKeys = Object.keys(
+        servicesData
+      ) as (keyof typeof servicesData)[];
+      servicesDataKeys.forEach((key) => {
+        setValue(key, servicesData[key]);
+      });
+    }
+  }, [setValue]);
+
+  const onSubmit = async (data: ServicesFormValues) => {
     try {
       if (isEditing) {
-        await axiosInstance.put(`/items/${firstStepData.id}`, {
-          ...firstStepData,
+        await axiosInstance.put(`/items/${id}`, {
+          ...firstStep,
           ...data,
         });
       } else {
-        await axiosInstance.post(`/items`, { ...firstStepData, ...data });
+        await axiosInstance.post(`/items`, { ...firstStep, ...data });
       }
       navigate(`/list`);
     } catch (error) {
       console.error("Error submitting item:", error);
     }
   };
-
-  useEffect(() => {
-    const storedData = sessionStorage.getItem("secondStepData");
-    if (storedData) {
-      const parsedData = JSON.parse(storedData);
-      Object.keys(parsedData).forEach((key) => {
-        setValue(key as keyof ServiceFormValues, parsedData[key]);
-      });
-    }
-    return () => {
-      if (!isEditing) {
-        sessionStorage.removeItem("secondStepData");
-      }
-    };
-  }, [setValue]);
 
   useEffect(() => {
     const subscription = watch((values) => {
@@ -156,4 +155,4 @@ const Service: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
   );
 };
 
-export default Service;
+export default Services;
