@@ -26,7 +26,7 @@ const autoCategorySchema = z.object({
   model: z.string().min(1, "Модель обязательна"),
   year: z.coerce.number().positive().min(1900, "Укажите год выпуска"),
   mileage: z.coerce.number().optional(),
-  id: z.string().optional(),
+  id: z.number().optional(),
 });
 
 type AutoFormValues = z.infer<typeof autoCategorySchema>;
@@ -34,9 +34,9 @@ type AutoFormValues = z.infer<typeof autoCategorySchema>;
 const Auto: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const isEditing = useAppSelector((state) => state.form.isEditing);
+  const {isEditing, id} = useAppSelector((state) => state.form);
   const [carBrands, setCarBrands] = useState<Car[]>([]);
-  const autoData = useAppSelector((state) => state.form.auto);
+  const autoData = useAppSelector((state) => state.form.AUTO);
   const firstStepData = useAppSelector((state) => state.form.firstStep);
 
   const {
@@ -74,7 +74,7 @@ const Auto: React.FC = () => {
   // Subscribe to form changes and update Redux accordingly
   useEffect(() => {
     const debouncedUpdate = debounce((cleanedData: AutoFormValues) => {
-      dispatch(updateData({ field: "auto", value: cleanedData }));
+      dispatch(updateData({ field: "AUTO", value: cleanedData }));
     }, 1000);
     const subscription = watch((data) => {
       const cleanedData = {
@@ -82,7 +82,7 @@ const Auto: React.FC = () => {
         model: data.model ?? "",
         year: data.year as number,
         mileage: data.mileage as number,
-        id: data.id ?? "",
+        id: typeof data.id === "number" ? data.id : undefined,
       };
       if (cleanedData) {
         debouncedUpdate(cleanedData);
@@ -98,7 +98,8 @@ const Auto: React.FC = () => {
     };
     try {
       if (isEditing) {
-        await axiosInstance.put(`/items/${firstStepData.id}`, formData);
+        console.log("Editing item with ID:", firstStepData, "id", id);
+        await axiosInstance.put(`/items/${id}`, formData);
       } else {
         await axiosInstance.post(`/items`, formData);
       }
@@ -130,7 +131,6 @@ const Auto: React.FC = () => {
               id="brand"
               {...register("brand")}
             >
-              {/* Add a default "Не указано" option */}
               <option value={watch("brand") || ""}>
                 {watch("brand") || "Не указано"}
               </option>
@@ -162,7 +162,6 @@ const Auto: React.FC = () => {
                   return car.name === selectedBrand;
                 })
                 ?.models?.map((m) => {
-                  console.log("Model:", m);
                   return (
                     <option key={m.id} value={m.name}>
                       {m.name}

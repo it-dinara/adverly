@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Item } from "Types/form";
+import { Item, Categories } from "Types/form";
 import { useAppDispatch } from "Redux/hooks";
 import s from "./ItemPage.module.css";
 import AxiosInstance from "AxiosInstance";
-import { setEditing } from "Redux/slices/formSlice";
+import { setEditing, updateData } from "Redux/slices/formSlice";
 
 const ItemPage: React.FC = () => {
   const [item, setItem] = useState<Item | null>(null);
@@ -20,12 +20,10 @@ const ItemPage: React.FC = () => {
     }
     const fetchData = async () => {
       try {
-        console.log("Item ID:", itemId);
         const response = await AxiosInstance.get<Item>(`/items/${itemId}`);
         const data = response.data;
         setItem(data);
         setError(null);
-        console.log("item", item);
       } catch (err: any) {
         setItem(null);
         if (err.response && err.response.status === 404) {
@@ -40,66 +38,62 @@ const ItemPage: React.FC = () => {
   }, [itemId]);
 
   const handleEdit = () => {
-    let firstStepData = {};
-    let secondStepData = {};
     if (item) {
-      firstStepData = {
-        id: item.id,
-        name: item.name,
-        description: item.description,
-        location: item.location,
-        category: item.category,
-        auto: item.auto,
-      };
-      sessionStorage.setItem("firstStepData", JSON.stringify(firstStepData));
-      console.log("firstStepData", firstStepData);
-      if (item.category === "Авто") {
-        secondStepData = {
-          brand: item.brand,
-          model: item.model,
-          year: item.year,
-          mileage: item.mileage,
-        };
-        sessionStorage.setItem(
-          "secondStepData",
-          JSON.stringify(secondStepData)
-        );
-      }
+      let categoryData: keyof typeof Categories = "AUTO";
+      Object.entries(Categories).forEach(([key, values]) => {
+        if (values === item.category) {
+          categoryData = key as keyof typeof Categories;
+        }
+      });
+      const {
+        firstStep: { name, description, location, category, id, photo } = item,
+        [categoryData as keyof typeof Categories]: { ...rest } = item,
+      } = item;
+      dispatch(
+        updateData({
+          field: "firstStep",
+          value: { name, description, location, category, photo },
+        })
+      );
+      dispatch(updateData({ field: categoryData, value: rest }));
+      dispatch(updateData({ field: "id", value: id }));
+      // dispatch(updateData({ field: "step", value: 2 }));
     }
     dispatch(setEditing(true));
   };
 
+  let list = Object.entries(item ?? {}).map(([type, value]) => {
+    return (
+      <p key={type} className={s.itemInfo}>
+        <strong>{type}:</strong> {value}
+      </p>
+    );
+  });
+
+  let photo = item && (
+    <div className={s.imageContainer} key={"photo"}>
+      <img
+        className={s.image}
+        alt={"photo"}
+        src={
+          item.photo
+            ? URL.createObjectURL(item.photo)
+            : "/assets/images/placeholder.png"
+        }
+      />
+    </div>
+  );
+
   return (
     <div className={s.container}>
       {error && <p className={s.errorMessage}>{error}</p>}
-      {item && (
-        <div className={s.itemDetails}>
-          <h2 className={s.title}>Item Details</h2>
-          {Object.entries(item ?? {}).map(([type, value]) => {
-            if (type === "photo") {
-              return (
-                <div className={s.imageContainer} key={type}>
-                  <img
-                    className={s.image}
-                    src={
-                      value && Object.entries(value).length === 0
-                        ? "/assets/images/placeholder.png"
-                        : value
-                    }
-                    alt={type}
-                  />
-                </div>
-              );
-            } else {
-              return (
-                <p key={type} className={s.itemInfo}>
-                  <strong>{type}:</strong> {value}
-                </p>
-              );
-            }
-          })}
-        </div>
-      )}
+
+      <div className={s.itemDetails}>
+        <h2 className={s.title}>Item Details</h2>
+        {list}
+        {photo}
+      </div>
+
       <Link to={`/form`} className={s.editLink}>
         <button type="button" className={s.editButton} onClick={handleEdit}>
           Редактировать

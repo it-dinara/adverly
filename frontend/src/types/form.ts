@@ -10,17 +10,17 @@ export type CategoriesType = typeof Categories;
 export type CategoryKeysType = CategoriesType[keyof CategoriesType];
 
 export interface FormState {
+  id: string | undefined;
   firstStep: FirstStep;
   step: number;
   isEditing: boolean;
   category: CategoryKeysType;
-  auto: AutoData;
-  realEstate: RealEstateData;
-  service: ServiceData;
+  AUTO: AutoData;
+  REAL_ESTATE: RealEstateData;
+  SERVICES: ServicesData;
 }
 
 export interface FirstStep {
-  id?: string; // Added ID for identification
   name: string;
   description: string;
   location: string;
@@ -29,7 +29,7 @@ export interface FirstStep {
   [key: string]: any;
 }
 
-export interface ServiceData {
+export interface ServicesData {
   serviceType: string;
   experience: number;
   cost: number;
@@ -49,7 +49,6 @@ export interface AutoData {
   model: string;
   mileage?: number;
   year: number;
-  id?: string; // Added ID for identification
 }
 
 export interface Item {

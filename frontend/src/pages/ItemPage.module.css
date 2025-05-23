@@ -45,11 +45,12 @@
 .imageContainer {
   display: flex;
   justify-content: center;
-  margin-top: 10px;
+  margin: 10px auto 0;
+  max-width: 200px;
 }
 
 .image {
-  max-width: 100%;
+  width: 100%;
   height: auto;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);

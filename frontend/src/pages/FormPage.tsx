@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import BasicStepForm from "../components/Steps/FirstStep/FirstStep";
-import CategoryStepForm from "../components/Steps/SecondStep/SecondStepForm";
+import FirstStep from "../components/Steps/FirstStep/FirstStep";
+import SecondStep from "../components/Steps/SecondStep/SecondStep";
 import { useAppSelector } from "Redux/hooks";
 import { Link } from "react-router-dom";
 import s from "./FormPage.module.css";
@@ -37,8 +37,8 @@ const FormPage = () => {
   return (
     <div className={s.container}>
       <div className={s.wrap}>
-        <BasicStepForm />
-        <CategoryStepForm />
+        <FirstStep />
+        <SecondStep />
       </div>
 
       <h2>{items.length > 0 && `Items`}</h2>

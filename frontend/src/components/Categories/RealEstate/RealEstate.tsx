@@ -32,6 +32,7 @@ const RealEstate: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const firstStepData = useAppSelector((state) => state.form.firstStep);
+  console.log("firstStepData ----------", firstStepData);
 
   const {
     register,
@@ -44,7 +45,7 @@ const RealEstate: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
     defaultValues: {},
   });
 
-  const realEstateData = useAppSelector((state) => state.form.realEstate);
+  const realEstateData = useAppSelector((state) => state.form.REAL_ESTATE);
   //populate the form with data from redux
   useEffect(() => {
     if (realEstateData) {
@@ -59,7 +60,7 @@ const RealEstate: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
   // Subscribe to form changes and update Redux accordingly
   useEffect(() => {
     const debouncedUpdate = debounce((cleanedData: RealEstateFormValues) => {
-      dispatch(updateData({ field: "realEstate", value: cleanedData }));
+      dispatch(updateData({ field: "REAL_ESTATE", value: cleanedData }));
     }, 1000);
     const subscription = watch((data) => {
       const cleanedData = {
@@ -75,6 +76,8 @@ const RealEstate: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
     return () => subscription.unsubscribe();
   }, [watch]);
 
+  const itemId = useAppSelector((state) => state.form.id);
+
   const onSubmit = async (data: RealEstateFormValues) => {
     const formData = {
       ...firstStepData,
@@ -82,7 +85,7 @@ const RealEstate: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
     };
     try {
       if (isEditing) {
-        await axiosInstance.put(`/items/${firstStepData.id}`, formData);
+        await axiosInstance.put(`/items/${itemId}`, formData);
       } else {
         await axiosInstance.post(`/items`, formData);
       }

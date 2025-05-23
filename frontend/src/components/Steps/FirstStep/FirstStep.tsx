@@ -38,6 +38,7 @@ const FirstStep: React.FC = () => {
 
   // Fill the form with Redux data after mounting
   useEffect(() => {
+    console.log("firstStep----------", firstStep);
     if (firstStep) {
       (Object.keys(firstStep) as (keyof FormValues)[]).forEach((key) => {
         setValue(key, firstStep[key]);

@@ -7,31 +7,31 @@ import {
   Categories,
   AutoData,
   RealEstateData,
-  ServiceData,
+  ServicesData,
 } from "Types/form";
 
 export const initialState: FormState = {
+  id: undefined,
   firstStep: {
-    id: undefined,
     name: "",
     description: "",
     location: "",
     photo: null,
     category: Categories.AUTO, // Use a single default value
   },
-  auto: {
+  AUTO: {
     brand: "",
     model: "",
     year: 0,
     mileage: undefined,
   },
-  realEstate: {
+  REAL_ESTATE: {
     propertyType: "",
     area: 0,
     rooms: 0,
     price: 0,
   },
-  service: {
+  SERVICES: {
     serviceType: "",
     experience: 0,
     cost: 0,
@@ -70,26 +70,6 @@ const unifiedFormSlice = createSlice({
       state.step = initialState.step;
       state.isEditing = initialState.isEditing;
     },
-    // Set an item for editing (only using a subset of FirstStep keys)
-    setItemToEdit(
-      state,
-      action: PayloadAction<
-        Pick<
-          FirstStep,
-          | "id"
-          | "name"
-          | "description"
-          | "location"
-          | "photo"
-          | "category"
-          | "auto"
-        >
-      >
-    ) {
-      state.isEditing = true;
-      state.step = 2;
-      state.firstStep = action.payload as FirstStep;
-    },
     // Toggle the editing mode
     setEditing(state, action: PayloadAction<boolean>) {
       state.isEditing = action.payload;
@@ -102,7 +82,6 @@ export const {
   updatePhoto,
   updateStep,
   resetForm,
-  setItemToEdit,
   setEditing,
 } = unifiedFormSlice.actions;
 
