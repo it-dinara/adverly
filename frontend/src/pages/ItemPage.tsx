@@ -84,21 +84,25 @@ const ItemPage: React.FC = () => {
     </div>
   );
 
-  return (
-    <div className={s.container}>
-      {error && <p className={s.errorMessage}>{error}</p>}
-
+  let itemDetails = (
+    <>
       <div className={s.itemDetails}>
         <h2 className={s.title}>Item Details</h2>
         {list}
         {photo}
       </div>
-
       <Link to={`/form`} className={s.editLink}>
         <button type="button" className={s.editButton} onClick={handleEdit}>
           Редактировать
         </button>
       </Link>
+    </>
+  );
+
+  return (
+    <div className={s.container}>
+      {error && <p className={s.errorMessage}>{error}</p>}
+      {item && !error ? itemDetails : null}
     </div>
   );
 };
