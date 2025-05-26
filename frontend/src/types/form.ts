@@ -9,12 +9,15 @@ export const Categories = {
 export type CategoriesType = typeof Categories;
 export type CategoryKeysType = CategoriesType[keyof CategoriesType];
 
-export interface FormState {
+export interface FormState extends SecondStepCategories {
   id: string | undefined;
   firstStep: FirstStep;
   step: number;
   isEditing: boolean;
   category: CategoryKeysType;
+}
+
+export interface SecondStepCategories {
   AUTO: AutoData;
   REAL_ESTATE: RealEstateData;
   SERVICES: ServicesData;
