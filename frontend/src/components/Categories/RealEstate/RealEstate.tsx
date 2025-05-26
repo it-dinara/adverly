@@ -65,9 +65,9 @@ const RealEstate: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
     const subscription = watch((data) => {
       const cleanedData = {
         propertyType: data.propertyType ?? "",
-        area: data.area as number,
-        rooms: data.rooms as number,
-        price: data.price as number,
+        area: Number(data.area),
+        rooms: Number(data.rooms),
+        price: Number(data.price),
       };
       if (cleanedData) {
         debouncedUpdate(cleanedData);
