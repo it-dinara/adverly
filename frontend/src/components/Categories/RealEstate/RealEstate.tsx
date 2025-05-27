@@ -1,13 +1,11 @@
-import React, { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import React from "react";
 import s from "./RealEstate.module.css";
 import axiosInstance from "AxiosInstance";
 import { useNavigate } from "react-router-dom";
-import { useAppSelector, useAppDispatch } from "Redux/hooks";
-import debounce from "Utils/debounce";
-import { updateData } from "Redux/slices/formSlice";
+import { useAppSelector } from "Redux/hooks";
+import useReduxFormSync from "Hooks/useReduxFormSync";
+import { realEstateSchema, RealEstateFormValues } from "Types/form";
+import { defaultRealEstateData } from "Constants/formDefaults";
 
 const propertyTypes = [
   "Квартира",
@@ -17,75 +15,28 @@ const propertyTypes = [
   "Земельный участок",
 ];
 
-const realEstateSchema = z.object({
-  propertyType: z.string().min(1, "Тип недвижимости обязателен"),
-  area: z.coerce.number().positive("Площадь должна быть положительным числом"),
-  rooms: z.coerce
-    .number()
-    .positive("Количество комнат должно быть положительным числом"),
-  price: z.coerce.number().positive("Цена должна быть положительным числом"),
-});
-
-type RealEstateFormValues = z.infer<typeof realEstateSchema>;
-
-const RealEstate: React.FC<{ isEditing?: boolean }> = ({ isEditing }) => {
+const RealEstate: React.FC = () => {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const firstStepData = useAppSelector((state) => state.form.firstStep);
-  console.log("firstStepData ----------", firstStepData);
+  const { isEditing, id, firstStep } = useAppSelector((state) => state.form);
 
   const {
     register,
     handleSubmit,
-    setValue,
-    watch,
     formState: { errors },
-  } = useForm<RealEstateFormValues>({
-    resolver: zodResolver(realEstateSchema),
-    defaultValues: {},
+  } = useReduxFormSync({
+    formField: "REAL_ESTATE",
+    schema: realEstateSchema,
+    defaultValues: defaultRealEstateData,
   });
-
-  const realEstateData = useAppSelector((state) => state.form.REAL_ESTATE);
-  //populate the form with data from redux
-  useEffect(() => {
-    if (realEstateData) {
-      (Object.keys(realEstateData) as (keyof RealEstateFormValues)[]).forEach(
-        (key) => {
-          setValue(key, realEstateData[key]);
-        }
-      );
-    }
-  }, [setValue]);
-
-  // Subscribe to form changes and update Redux accordingly
-  useEffect(() => {
-    const debouncedUpdate = debounce((cleanedData: RealEstateFormValues) => {
-      dispatch(updateData({ field: "REAL_ESTATE", value: cleanedData }));
-    }, 1000);
-    const subscription = watch((data) => {
-      const cleanedData = {
-        propertyType: data.propertyType ?? "",
-        area: Number(data.area),
-        rooms: Number(data.rooms),
-        price: Number(data.price),
-      };
-      if (cleanedData) {
-        debouncedUpdate(cleanedData);
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [watch]);
-
-  const itemId = useAppSelector((state) => state.form.id);
 
   const onSubmit = async (data: RealEstateFormValues) => {
     const formData = {
-      ...firstStepData,
+      ...firstStep,
       ...data,
     };
     try {
       if (isEditing) {
-        await axiosInstance.put(`/items/${itemId}`, formData);
+        await axiosInstance.put(`/items/${id}`, formData);
       } else {
         await axiosInstance.post(`/items`, formData);
       }

@@ -15,6 +15,8 @@ module.exports = {
       Types: path.resolve(__dirname, "src/types"),
       Categories: path.resolve(__dirname, "src/components/Categories"),
       Utils: path.resolve(__dirname, "src/utils"),
+      Hooks: path.resolve(__dirname, "src/hooks"),
+      Constants: path.resolve(__dirname, "src/constants"),
     },
     extensions: [".ts", ".tsx", ".js"],
   },

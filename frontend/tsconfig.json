@@ -13,7 +13,9 @@
       "Pages/*": ["src/pages/*"],
       "Types/*": ["src/types/*"],
       "Categories/*": ["src/components/Categories/*"],
-      "Utils/*": ["src/utils/*"]
+      "Utils/*": ["src/utils/*"],
+      "Hooks/*": ["src/hooks/*"],
+      "Constants/*": ["src/constants/*"]
     },
     "plugins": [
       {

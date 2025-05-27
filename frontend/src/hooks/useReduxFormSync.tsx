@@ -1,35 +1,32 @@
-// hooks/useReduxFormSync.ts
 import { useEffect } from "react";
 import {
   useForm,
   UseFormReturn,
   DefaultValues,
   Path,
+  FieldValues,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import debounce from "Utils/debounce";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { updateData } from "../redux/slices/formSlice";
-import {
-  FormState,
-} from "Types/form";
+import { useAppDispatch, useAppSelector } from "Redux/hooks";
+import { updateData } from "Redux/slices/formSlice";
 import { ZodType } from "zod";
+import { FormsTypes } from "Types/form";
 
-interface UseReduxFormSyncProps<T extends FormState> {
-  formField: keyof FormState; // e.g. "AUTO", "SERVICES"
+interface UseReduxFormSyncProps<T extends FieldValues> {
+  formField: FormsTypes; // e.g. "AUTO", "SERVICES"
   schema: ZodType<T, any, T>; // Zod schema for validation
   defaultValues?: T; // optional default values
+  mode?: "onChange" | "onBlur" | "onSubmit"; // optional mode for form validation
 }
 
-export function useReduxFormSync<T extends FormState>({
+export default function useReduxFormSync<T extends FieldValues>({
   formField,
   schema,
   defaultValues = {} as T,
 }: UseReduxFormSyncProps<T>): UseFormReturn<T> {
   // Select the current state slice (e.g., state.form.AUTO)
-  const storedData = useAppSelector(
-    (state: { form: FormState }) => state.form[formField] as unknown as T
-  );
+  const storedData = useAppSelector((state) => state.form[formField]);
 
   const dispatch = useAppDispatch();
 
@@ -45,12 +42,14 @@ export function useReduxFormSync<T extends FormState>({
   // When the component mounts, load stored values into the form
   useEffect(() => {
     if (storedData) {
-      const typedData = storedData;
-      const dataKeys = Object.keys(typedData) as (keyof T)[];
+      const dataKeys = Object.keys(storedData) as (keyof typeof storedData)[];
       dataKeys.forEach((key) => {
-        setValue(key as Path<T>, typedData[key] as any);
+        setValue(key as Path<T>, storedData[key]);
       });
     }
+    return () => {
+      
+    }  
   }, [setValue]);
 
   // Subscribe to form changes, and update Redux with a debounce

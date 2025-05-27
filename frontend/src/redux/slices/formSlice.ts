@@ -1,39 +1,8 @@
-// src/redux/slices/formSlice.ts
-
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { FormState, Categories } from "Types/form";
+import { FormState } from "Types/form";
+import { defaultFormState } from "../../constants/formDefaults";
 
-export const initialState: FormState = {
-  id: undefined,
-  firstStep: {
-    name: "",
-    description: "",
-    location: "",
-    photo: null,
-    category: Categories.AUTO, // Use a single default value
-  },
-  AUTO: {
-    brand: "",
-    model: "",
-    year: 0,
-    mileage: undefined,
-  },
-  REAL_ESTATE: {
-    propertyType: "",
-    area: 0,
-    rooms: 0,
-    price: 0,
-  },
-  SERVICES: {
-    serviceType: "",
-    experience: 0,
-    cost: 0,
-    schedule: "",
-  },
-  step: 1,
-  isEditing: false,
-  category: Categories.AUTO, // Default category
-};
+export const initialState: FormState = defaultFormState;
 
 const unifiedFormSlice = createSlice({
   name: "form",

@@ -1,23 +1,10 @@
-import React, { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import React from "react";
 import { useAppDispatch, useAppSelector } from "Redux/hooks";
-import { updateStep, updatePhoto, updateData } from "Redux/slices/formSlice";
+import { updateStep, updatePhoto } from "Redux/slices/formSlice";
 import s from "./FirstStep.module.css";
-import { Categories, CategoryKeysType } from "Types/form";
-import debounce from "Utils/debounce";
-
-// Define the validation schema via Zod
-const formSchema = z.object({
-  name: z.string().min(1, "Название обязательно"),
-  description: z.string().min(1, "Описание обязательно"),
-  location: z.string().min(1, "Локация обязательна"),
-  photo: z.instanceof(File).optional().nullable(),
-  category: z.nativeEnum(Categories, { message: "Категория обязательна" }),
-});
-
-type FormValues = z.infer<typeof formSchema>;
+import { Categories } from "Types/form";
+import useReduxFormSync from "Hooks/useReduxFormSync";
+import { FirstStepFormValues, firstStepFormSchema } from "Types/form";
 
 const FirstStep: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -28,23 +15,13 @@ const FirstStep: React.FC = () => {
     register,
     handleSubmit,
     setValue,
-    watch,
     formState: { errors },
-  } = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+  } = useReduxFormSync<FirstStepFormValues>({
+    formField: "firstStep",
     defaultValues: firstStep,
+    schema: firstStepFormSchema,
     mode: "onBlur",
   });
-
-  // Fill the form with Redux data after mounting
-  useEffect(() => {
-    console.log("firstStep----------", firstStep);
-    if (firstStep) {
-      (Object.keys(firstStep) as (keyof FormValues)[]).forEach((key) => {
-        setValue(key, firstStep[key]);
-      });
-    }
-  }, [setValue]);
 
   // Handler for file input changes
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,30 +30,7 @@ const FirstStep: React.FC = () => {
     dispatch(updatePhoto(file));
   };
 
-  // Subscribe to form changes and update Redux accordingly
-  useEffect(() => {
-    // Debounce the dispatch function so it doesn't fire on every keystroke
-    const debouncedUpdate = debounce((cleanedData: FormValues) => {
-      dispatch(updateData({ field: "firstStep", value: cleanedData }));
-    }, 1000);
-
-    const subscription = watch((data) => {
-      // Ensure all required fields are present and not undefined
-      const cleanedData = {
-        name: data.name ?? "",
-        description: data.description ?? "",
-        location: data.location ?? "",
-        photo: data.photo ?? null,
-        category: data.category as CategoryKeysType, // Ensure correct type and not undefined
-      };
-      if (cleanedData) {
-        debouncedUpdate(cleanedData);
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [watch, dispatch]);
-
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = (data: FirstStepFormValues) => {
     dispatch(updateStep(2));
     console.log("Form submitted:", data);
   };

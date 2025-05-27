@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import React from "react";
 import s from "./Services.module.css";
 import axiosInstance from "AxiosInstance";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "Redux/hooks";
+import useReduxFormSync from "Hooks/useReduxFormSync";
+import { defaultServicesData } from "Constants/formDefaults";
+import { servicesSchema, ServicesFormValues } from "Types/form";
 
 const serviceTypes = [
   "Ремонт",
@@ -15,48 +15,20 @@ const serviceTypes = [
   "Стрижка",
 ];
 
-const servicesSchema = z.object({
-  serviceType: z.string().min(1, "Тип услуги обязателен"),
-  experience: z.coerce
-    .number()
-    .positive("Опыт работы должен быть положительным числом"),
-  cost: z.coerce
-    .number()
-    .positive("Стоимость должна быть положительным числом"),
-  schedule: z.string().optional(),
-  id: z.number().optional(),
-});
-
-type ServicesFormValues = z.infer<typeof servicesSchema>;
-
 const Services: React.FC = () => {
   const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
-    setValue,
-    watch,
     formState: { errors },
-  } = useForm<ServicesFormValues>({
-    resolver: zodResolver(servicesSchema),
-    defaultValues: {},
+  } = useReduxFormSync<ServicesFormValues>({
+    formField: "SERVICES",
+    schema: servicesSchema,
+    defaultValues: defaultServicesData,
   });
 
   const { firstStep, id, isEditing } = useAppSelector((state) => state.form);
-  const servicesData = useAppSelector((state) => state.form.SERVICES);
-
-  // Load stored values when the component mounts
-  useEffect(() => {
-    if (servicesData) {
-      const servicesDataKeys = Object.keys(
-        servicesData
-      ) as (keyof typeof servicesData)[];
-      servicesDataKeys.forEach((key) => {
-        setValue(key, servicesData[key]);
-      });
-    }
-  }, [setValue]);
 
   const onSubmit = async (data: ServicesFormValues) => {
     try {
@@ -73,13 +45,6 @@ const Services: React.FC = () => {
       console.error("Error submitting item:", error);
     }
   };
-
-  useEffect(() => {
-    const subscription = watch((values) => {
-      sessionStorage.setItem("secondStepData", JSON.stringify(values));
-    });
-    return () => subscription.unsubscribe();
-  }, [watch]);
 
   return (
     <form className={s.form} onSubmit={handleSubmit(onSubmit)}>

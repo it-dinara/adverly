@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import s from "./Auto.module.css";
-import { Categories, Car } from "Types/form";
-import axiosInstance from "AxiosInstance";
-import { useNavigate } from "react-router-dom";
+import {
+  Categories,
+  Car,
+  AutoFormValues,
+  autoCategorySchema,
+} from "Types/form";
 import axios from "axios";
-import { useAppSelector, useAppDispatch } from "Redux/hooks";
-import debounce from "Utils/debounce";
-import { updateData } from "Redux/slices/formSlice";
+import { useAppSelector } from "Redux/hooks";
+import useReduxFormSync from "Hooks/useReduxFormSync";
+import { defaultAutoData } from "../../../constants/formDefaults";
+import useSubmitForm from "Hooks/useSubmitForm";
 
 const carMileage = [
   5000, 15000, 30000, 50000, 75000, 100000, 150000, 200000, 250000, 300000,
@@ -21,34 +22,22 @@ const years: number[] = Array.from(
   (_, i) => currentYear - i
 );
 
-const autoCategorySchema = z.object({
-  brand: z.string().min(1, "Марка обязательна"),
-  model: z.string().min(1, "Модель обязательна"),
-  year: z.coerce.number().positive().min(1900, "Укажите год выпуска"),
-  mileage: z.coerce.number().optional(),
-  id: z.number().optional(),
-});
-
-type AutoFormValues = z.infer<typeof autoCategorySchema>;
-
 const Auto: React.FC = () => {
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const { isEditing, id, firstStep } = useAppSelector((state) => state.form);
+  const { isEditing } = useAppSelector((state) => state.form);
   const [carBrands, setCarBrands] = useState<Car[]>([]);
-  const autoData = useAppSelector((state) => state.form.AUTO);
 
   const {
     register,
     handleSubmit,
-    setValue,
     watch,
     formState: { errors },
-  } = useForm<AutoFormValues>({
-    resolver: zodResolver(autoCategorySchema),
-    defaultValues: {},
+  } = useReduxFormSync<AutoFormValues>({
+    formField: "AUTO",
+    schema: autoCategorySchema,
+    defaultValues: defaultAutoData,
   });
 
+  // Fetch car brands data
   useEffect(() => {
     const fetchCarBrands = async () => {
       try {
@@ -61,53 +50,7 @@ const Auto: React.FC = () => {
     fetchCarBrands();
   }, []);
 
-  // Load stored values when the component mounts
-  useEffect(() => {
-    if (autoData) {
-      const autoDataKeys = Object.keys(autoData) as (keyof typeof autoData)[];
-      autoDataKeys.forEach((key) => {
-        setValue(key, autoData[key]);
-      });
-    }
-  }, [setValue]);
-
-  // Subscribe to form changes and update Redux accordingly
-  useEffect(() => {
-    const debouncedUpdate = debounce((cleanedData: AutoFormValues) => {
-      dispatch(updateData({ field: "AUTO", value: cleanedData }));
-    }, 1000);
-    const subscription = watch((data) => {
-      const cleanedData = {
-        brand: data.brand ?? "",
-        model: data.model ?? "",
-        year: data.year as number,
-        mileage: data.mileage as number,
-        id: typeof data.id === "number" ? data.id : undefined,
-      };
-      if (cleanedData) {
-        debouncedUpdate(cleanedData);
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [watch]);
-
-  const onSubmit = async (data: AutoFormValues) => {
-    const formData = {
-      ...firstStep,
-      ...data,
-    };
-    try {
-      if (isEditing) {
-        console.log("Editing item with ID:", firstStep, "id", id);
-        await axiosInstance.put(`/items/${id}`, formData);
-      } else {
-        await axiosInstance.post(`/items`, formData);
-      }
-      navigate(`/list`);
-    } catch (error) {
-      console.error("Error submitting item:", error);
-    }
-  };
+  const onSubmit = useSubmitForm<AutoFormValues>();
 
   const onInvalid = (errors: any) =>
     console.error("Validation Errors:", errors);

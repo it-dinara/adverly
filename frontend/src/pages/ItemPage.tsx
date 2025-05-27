@@ -1,6 +1,6 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Item, Categories } from "Types/form";
+import { Item, Categories, FormState } from "Types/form";
 import { useAppDispatch } from "Redux/hooks";
 import s from "./ItemPage.module.css";
 import AxiosInstance from "AxiosInstance";
@@ -40,28 +40,34 @@ const ItemPage: React.FC = () => {
   const handleEdit = () => {
     if (item) {
       let categoryData: keyof typeof Categories = "AUTO";
+      // Determine the category key based on the item category
       Object.entries(Categories).forEach(([key, values]) => {
         if (values === item.category) {
           categoryData = key as keyof typeof Categories;
         }
       });
-      const {
-        firstStep: { name, description, location, category, id, photo } = item,
-        [categoryData as keyof typeof Categories]: { ...rest } = item,
-      } = item;
+
+      const { name, description, location, category, photo, ...rest } = item;
       dispatch(
         updateData({
           field: "firstStep",
           value: { name, description, location, category, photo },
         })
       );
-      dispatch(updateData({ field: categoryData, value: rest }));
-      dispatch(updateData({ field: "id", value: id }));
+      dispatch(
+        updateData({
+          field: categoryData,
+          value: rest as unknown as FormState[typeof categoryData],
+        })
+      );
+      dispatch(updateData({ field: "id", value: item.id }));
+
       // dispatch(updateData({ field: "step", value: 2 }));
     }
     dispatch(setEditing(true));
   };
 
+  // Create a list of item details
   let list = Object.entries(item ?? {}).map(([type, value]) => {
     return (
       <p key={type} className={s.itemInfo}>
@@ -70,7 +76,7 @@ const ItemPage: React.FC = () => {
     );
   });
 
-  let photo = item && item.auto && (
+  let photo = item && item.AUTO && (
     <div className={s.imageContainer} key={"photo"}>
       <img
         className={s.image}
@@ -83,6 +89,7 @@ const ItemPage: React.FC = () => {
       />
     </div>
   );
+
 
   let itemDetails = (
     <>
