@@ -27,6 +27,7 @@ const RealEstate: React.FC = () => {
     formField: "REAL_ESTATE",
     schema: realEstateSchema,
     defaultValues: defaultRealEstateData,
+    mode: "onBlur",
   });
 
   const onSubmit = async (data: RealEstateFormValues) => {

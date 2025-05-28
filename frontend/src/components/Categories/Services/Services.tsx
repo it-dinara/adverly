@@ -26,6 +26,7 @@ const Services: React.FC = () => {
     formField: "SERVICES",
     schema: servicesSchema,
     defaultValues: defaultServicesData,
+    mode: "onBlur",
   });
 
   const { firstStep, id, isEditing } = useAppSelector((state) => state.form);

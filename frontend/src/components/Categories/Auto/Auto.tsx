@@ -35,6 +35,7 @@ const Auto: React.FC = () => {
     formField: "AUTO",
     schema: autoCategorySchema,
     defaultValues: defaultAutoData,
+    mode: "onBlur",
   });
 
   // Fetch car brands data
