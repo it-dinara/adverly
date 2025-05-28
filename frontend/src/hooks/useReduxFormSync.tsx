@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import {
   useForm,
   UseFormReturn,
@@ -47,22 +47,26 @@ export default function useReduxFormSync<T extends FieldValues>({
         setValue(key as Path<T>, storedData[key]);
       });
     }
-    return () => {
-      
-    }  
+    return () => {};
   }, [setValue]);
 
-  // Subscribe to form changes, and update Redux with a debounce
-  useEffect(() => {
-    const debouncedUpdate = debounce((data) => {
-      dispatch(updateData({ field: formField, value: data }));
-    }, 1000);
+  const { debounced, cancel } = useCallback(
+    () =>
+      debounce((data) => {
+        dispatch(updateData({ field: formField, value: data }));
+      }, 1000),
+    [dispatch, formField]
+  )();
 
+  useEffect(() => {
     const subscription = watch((data) => {
-      debouncedUpdate(data);
+      debounced(data);
     });
-    return () => subscription.unsubscribe();
-  }, [watch, dispatch]);
+    return () => {
+      subscription.unsubscribe();
+      cancel();
+    };
+  }, [watch, debounced, cancel]);
 
   return methods;
 }

@@ -1,12 +1,14 @@
-import { useAppSelector } from "Redux/hooks";
+import { useAppSelector, useAppDispatch } from "Redux/hooks";
 import axiosInstance from "AxiosInstance";
 import { useNavigate } from "react-router-dom";
+import { resetForm } from "Redux/slices/formSlice";
 
 export default function useSubmitForm<TFormValues>(): (
   data: TFormValues
 ) => Promise<void> {
   const navigate = useNavigate();
   const { isEditing, id, firstStep } = useAppSelector((state) => state.form);
+  const dispatch = useAppDispatch();
 
   const onSubmit = async (data: TFormValues) => {
     const formData = {
@@ -20,6 +22,7 @@ export default function useSubmitForm<TFormValues>(): (
       } else {
         await axiosInstance.post(`/items`, formData);
       }
+      dispatch(resetForm());
       navigate(`/list`);
     } catch (error) {
       console.error("Error submitting item:", error);

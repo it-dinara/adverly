@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "Redux/hooks";
 import Pagination from "../components/Pagination/Pagination";
 import { fetchItems } from "Redux/slices/itemsListSlice";
-import { setEditing, resetForm } from "Redux/slices/formSlice";
 import { Categories, FilterOptionsType } from "Types/form";
 import s from "./ItemsListPage.module.css";
 
@@ -35,7 +34,6 @@ const ItemsListPage: React.FC = () => {
 
   useEffect(() => {
     dispatch(fetchItems());
-    dispatch(resetForm()); // Сброс формы
   }, [dispatch]);
 
   const [filteredItems, setFilteredItems] = useState(items);
