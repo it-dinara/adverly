@@ -1,8 +1,9 @@
 import {
   AutoFormValues,
   RealEstateFormValues,
-  ServicesData,
-  CategoryKeysType,
+  ServicesFormValues,
+  Categories,
+  SelectedCategoryFormType,
 } from "Types/form";
 
 // Default values for Auto category
@@ -11,7 +12,6 @@ export const defaultAutoData: AutoFormValues = {
   model: "",
   year: new Date().getFullYear(),
   mileage: undefined,
-  id: undefined,
 };
 
 // Default values for Real Estate category
@@ -23,27 +23,39 @@ export const defaultRealEstateData: RealEstateFormValues = {
 };
 
 // Default values for Services category
-export const defaultServicesData: ServicesData = {
+export const defaultServicesData: ServicesFormValues = {
   serviceType: "",
   experience: 0,
   cost: 0,
   schedule: "",
 };
 
+export const defaultFirstStepData = {
+  name: "",
+  description: "",
+  location: "",
+  photo: null,
+  categorySelected: Categories.AUTO, // Default category
+};
+
+export const defaultFormData = {
+  ...defaultFirstStepData,
+  autoData: defaultAutoData,
+  realEstateData: defaultRealEstateData,
+  servicesData: defaultServicesData,
+};
+
 // Combine all defaults into one object
 export const defaultFormState = {
-  id: undefined,
-  firstStep: {
-    name: "",
-    description: "",
-    location: "",
-    photo: null,
-    category: "AUTO" as CategoryKeysType, // Default category
-  },
-  AUTO: defaultAutoData,
-  REAL_ESTATE: defaultRealEstateData,
-  SERVICES: defaultServicesData,
+  ...defaultFirstStepData,
   step: 1,
   isEditing: false,
-  category: "AUTO" as CategoryKeysType, // Default category
+  id: undefined,
+  selectedCategoryForm: {
+    type: Categories.AUTO,
+    brand: "",
+    model: "",
+    year: 0,
+    mileage: undefined,
+  },
 };

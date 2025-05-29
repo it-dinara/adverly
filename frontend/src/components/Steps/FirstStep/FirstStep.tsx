@@ -4,24 +4,26 @@ import { updateStep, updatePhoto } from "Redux/slices/formSlice";
 import s from "./FirstStep.module.css";
 import { Categories } from "Types/form";
 import useReduxFormSync from "Hooks/useReduxFormSync";
-import { FirstStepFormValues, firstStepFormSchema } from "Types/form";
+import { FirstStepFormValues, FormDataValues } from "Types/form";
+import { defaultFirstStepData } from "Constants/formDefaults";
+import { UseFormWatch } from "react-hook-form";
 
-const FirstStep: React.FC = () => {
+type FirstStepProps = {
+  register: any;
+  watch: UseFormWatch<FormDataValues>;
+  errors: any;
+  setValue: any;
+  [key: string]: any; // for other props like register
+};
+
+const FirstStep: React.FC<FirstStepProps> = ({
+  register,
+  watch,
+  errors,
+  setValue,
+}) => {
   const dispatch = useAppDispatch();
-  const isEditing = useAppSelector((state) => state.form.isEditing);
-  const firstStep = useAppSelector((state) => state.form.firstStep);
-
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useReduxFormSync<FirstStepFormValues>({
-    formField: "firstStep",
-    defaultValues: firstStep,
-    schema: firstStepFormSchema,
-    mode: "onBlur",
-  });
+  const { isEditing } = useAppSelector((state) => state.form);
 
   // Handler for file input changes
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,7 +38,7 @@ const FirstStep: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className={s.form}>
+    <div className={s.form}>
       <h2 className={`${s.heading} ${isEditing ? s.editing : ""}`}>
         {isEditing ? "Редактирование объявления" : "Создание объявления"}
       </h2>
@@ -113,11 +115,11 @@ const FirstStep: React.FC = () => {
             </option>
           ))}
         </select>
-        {errors.category && (
-          <div className={s.error}>{errors.category.message}</div>
+        {errors.categoryVariants && (
+          <div className={s.error}>{errors.categoryVariants.message}</div>
         )}
       </div>
-    </form>
+    </div>
   );
 };
 

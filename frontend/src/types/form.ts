@@ -7,18 +7,14 @@ export const Categories = {
 } as const;
 
 export type CategoriesType = typeof Categories;
-export type FormsTypes = (keyof CategoriesType) | "firstStep";
 export type CategoryKeysType = CategoriesType[keyof CategoriesType];
+export type FormsTypes = keyof CategoriesType | "firstStep";
 
-export interface FormState {
-  id: string | undefined;
+export interface FormState extends FormDataValues {
   step: number;
   isEditing: boolean;
-  category?: CategoryKeysType;
-  firstStep: FirstStep;
-  AUTO: AutoFormValues;
-  REAL_ESTATE: RealEstateFormValues;
-  SERVICES: ServicesData;
+  categoryVariants?: CategoryKeysType;
+  [key: string]: any;
 }
 
 export const firstStepFormSchema = z.object({
@@ -26,35 +22,34 @@ export const firstStepFormSchema = z.object({
   description: z.string().min(1, "Описание обязательно"),
   location: z.string().min(1, "Локация обязательна"),
   photo: z.instanceof(File).optional().nullable(),
-  category: z.nativeEnum(Categories, { message: "Категория обязательна" }),
-  id: z.number().optional(),
+  categorySelected: z.nativeEnum(Categories, {
+    message: "Категория обязательна",
+  }),
 });
 
 export type FirstStepFormValues = z.infer<typeof firstStepFormSchema>;
 
-export const autoCategorySchema = z.object({
+export const autoFormSchema = z.object({
   brand: z.string().min(1, "Марка обязательна"),
   model: z.string().min(1, "Модель обязательна"),
   year: z.coerce.number().positive().min(1900, "Укажите год выпуска"),
   mileage: z.coerce.number().optional(),
-  id: z.number().optional(),
 });
 
-export type AutoFormValues = z.infer<typeof autoCategorySchema>;
+export type AutoFormValues = z.infer<typeof autoFormSchema>;
 
-export const realEstateSchema = z.object({
+export const realEstateFormSchema = z.object({
   propertyType: z.string().min(1, "Тип недвижимости обязателен"),
   area: z.coerce.number().positive("Площадь должна быть положительным числом"),
   rooms: z.coerce
     .number()
     .positive("Количество комнат должно быть положительным числом"),
   price: z.coerce.number().positive("Цена должна быть положительным числом"),
-  id: z.number().optional(),
 });
 
-export type RealEstateFormValues = z.infer<typeof realEstateSchema>;
+export type RealEstateFormValues = z.infer<typeof realEstateFormSchema>;
 
-export const servicesSchema = z.object({
+export const servicesFormSchema = z.object({
   serviceType: z.string().min(1, "Тип услуги обязателен"),
   experience: z.coerce
     .number()
@@ -63,38 +58,42 @@ export const servicesSchema = z.object({
     .number()
     .positive("Стоимость должна быть положительным числом"),
   schedule: z.string().optional(),
-  id: z.number().optional(),
 });
 
-export type ServicesFormValues = z.infer<typeof servicesSchema>;
+export type ServicesFormValues = z.infer<typeof servicesFormSchema>;
 
-export interface FirstStep {
-  name: string;
-  description: string;
-  location: string;
-  photo?: File | null;
-  category: CategoryKeysType;
-  [key: string]: any;
-}
+export const selectedCategoryForm = z.discriminatedUnion("type", [
+  z.object({ type: z.literal(Categories.AUTO), ...autoFormSchema.shape }),
+  z.object({
+    type: z.literal(Categories.REAL_ESTATE),
+    ...realEstateFormSchema.shape,
+  }),
+  z.object({
+    type: z.literal(Categories.SERVICES),
+    ...servicesFormSchema.shape,
+  }),
+]);
 
-export interface ServicesData {
-  serviceType: string;
-  experience: number;
-  cost: number;
-  schedule?: string;
-}
+export type SelectedCategoryFormType = z.infer<typeof selectedCategoryForm>;
+
+export const formDataSchema = firstStepFormSchema.extend({
+  selectedCategoryForm,
+  id: z.string().optional(),
+});
+
+export type FormDataValues = z.infer<typeof formDataSchema>;
 
 export interface Item {
   id: string;
   name: string;
   description: string;
   location: string;
-  category: CategoryKeysType;
-  photo?: File | null | undefined;
-  firstStep: FirstStep;
+  categorySelected: CategoryKeysType;
+  photo?: File | null;
+  firstStep: FirstStepFormValues;
   AUTO?: AutoFormValues;
   REAL_ESTATE?: RealEstateFormValues;
-  SERVICES?: ServicesData;
+  SERVICES?: ServicesFormValues;
 }
 
 // Define types for car data

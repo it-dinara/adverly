@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { FormState } from "Types/form";
-import { defaultFormState } from "../../constants/formDefaults";
+import { defaultFormState } from "Constants/formDefaults";
 
 export const initialState: FormState = defaultFormState;
 
@@ -13,10 +13,7 @@ const unifiedFormSlice = createSlice({
       action: PayloadAction<{ field: T; value: FormState[T] }>
     ) {
       const { field, value } = action.payload;
-      state[field] = value;
-      if (field === "category") {
-        state.step = 1; // Reset step if the category changes
-      }
+      return value;
     },
     // Update the photo field
     updatePhoto(state, action: PayloadAction<File | null>) {

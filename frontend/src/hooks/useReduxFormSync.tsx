@@ -11,10 +11,10 @@ import debounce from "Utils/debounce";
 import { useAppDispatch, useAppSelector } from "Redux/hooks";
 import { updateData } from "Redux/slices/formSlice";
 import { ZodType } from "zod";
-import { FormsTypes } from "Types/form";
+import { FormState } from "Types/form";
 
 interface UseReduxFormSyncProps<T extends FieldValues> {
-  formField: FormsTypes; // e.g. "AUTO", "SERVICES"
+  formField: keyof FormState; // e.g. "AUTO", "SERVICES"
   schema: ZodType<T, any, T>; // Zod schema for validation
   defaultValues?: T; // optional default values
   mode?: "onChange" | "onBlur" | "onSubmit"; // optional mode for form validation
@@ -24,9 +24,10 @@ export default function useReduxFormSync<T extends FieldValues>({
   formField,
   schema,
   defaultValues = {} as T,
+  mode,
 }: UseReduxFormSyncProps<T>): UseFormReturn<T> {
   // Select the current state slice (e.g., state.form.AUTO)
-  const storedData = useAppSelector((state) => state.form[formField]);
+  const storedData = useAppSelector((state) => state.form);
 
   const dispatch = useAppDispatch();
 
@@ -36,16 +37,19 @@ export default function useReduxFormSync<T extends FieldValues>({
     defaultValues: (storedData
       ? storedData
       : defaultValues) as DefaultValues<T>,
+    mode: mode,
   });
   const { setValue, watch } = methods;
 
   // When the component mounts, load stored values into the form
   useEffect(() => {
     if (storedData) {
-      const dataKeys = Object.keys(storedData) as (keyof typeof storedData)[];
+      console.log("storedData", storedData);
+      const dataKeys = Object.keys(storedData);
       dataKeys.forEach((key) => {
         setValue(key as Path<T>, storedData[key]);
       });
+      // setValue("form", storedData);
     }
     return () => {};
   }, [setValue]);
@@ -53,6 +57,8 @@ export default function useReduxFormSync<T extends FieldValues>({
   const { debounced, cancel } = useCallback(
     () =>
       debounce((data) => {
+        console.log("formField", formField, "data", data);
+
         dispatch(updateData({ field: formField, value: data }));
       }, 1000),
     [dispatch, formField]

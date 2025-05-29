@@ -1,16 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, ReactNode } from "react";
 import s from "./Auto.module.css";
-import {
-  Categories,
-  Car,
-  AutoFormValues,
-  autoCategorySchema,
-} from "Types/form";
+import { Categories, Car, AutoFormValues, FormDataValues } from "Types/form";
 import axios from "axios";
 import { useAppSelector } from "Redux/hooks";
 import useReduxFormSync from "Hooks/useReduxFormSync";
-import { defaultAutoData } from "../../../constants/formDefaults";
 import useSubmitForm from "Hooks/useSubmitForm";
+import { UseFormWatch } from "react-hook-form";
 
 const carMileage = [
   5000, 15000, 30000, 50000, 75000, 100000, 150000, 200000, 250000, 300000,
@@ -22,21 +17,16 @@ const years: number[] = Array.from(
   (_, i) => currentYear - i
 );
 
-const Auto: React.FC = () => {
+type AutoProps = {
+  register: any;
+  watch: UseFormWatch<FormDataValues>;
+  errors: any;
+  [key: string]: any; // for other props like register
+};
+
+const Auto: React.FC<AutoProps> = ({ register, watch, errors }) => {
   const { isEditing } = useAppSelector((state) => state.form);
   const [carBrands, setCarBrands] = useState<Car[]>([]);
-
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useReduxFormSync<AutoFormValues>({
-    formField: "AUTO",
-    schema: autoCategorySchema,
-    defaultValues: defaultAutoData,
-    mode: "onBlur",
-  });
 
   // Fetch car brands data
   useEffect(() => {
@@ -51,18 +41,11 @@ const Auto: React.FC = () => {
     fetchCarBrands();
   }, []);
 
-  const onSubmit = useSubmitForm<AutoFormValues>();
-
-  const onInvalid = (errors: any) =>
-    console.error("Validation Errors:", errors);
-
-  const selectedBrand = watch("brand");
+  const selectedBrand = watch("selectedCategoryForm.brand");
+  const selectedModel = watch("selectedCategoryForm.model");
 
   return (
-    <form
-      className={s.form}
-      onSubmit={handleSubmit(onSubmit, (errors: any) => onInvalid(errors))}
-    >
+    <div className={s.form}>
       <h2 className={s.heading}>{"Авто"}</h2>
       {Categories.AUTO && (
         <>
@@ -75,8 +58,10 @@ const Auto: React.FC = () => {
               id="brand"
               {...register("brand")}
             >
-              <option value={watch("brand") || ""}>
-                {watch("brand") || "Не указано"}
+              <option value={selectedBrand || ""}>
+                {typeof selectedBrand === "string"
+                  ? selectedBrand
+                  : "Не указано"}
               </option>
               {carBrands.map((car) => (
                 <option key={car.id} value={car.name}>
@@ -84,7 +69,7 @@ const Auto: React.FC = () => {
                 </option>
               ))}
             </select>
-            {errors.brand && (
+            {errors?.AUTO?.brand && (
               <div className={s.error}>{errors.brand.message?.toString()}</div>
             )}
           </div>
@@ -97,8 +82,10 @@ const Auto: React.FC = () => {
               id="model"
               {...register("model")}
             >
-              <option value={watch("model") || ""}>
-                {watch("model") || "Не указано"}
+              <option value={selectedModel || ""}>
+                {typeof selectedModel === "string"
+                  ? selectedModel
+                  : "Не указано"}
               </option>
               {/* Filter car brands based on the selected brand */}
               {carBrands
@@ -113,7 +100,7 @@ const Auto: React.FC = () => {
                   );
                 })}
             </select>
-            {errors.model && (
+            {errors?.AUTO?.model && (
               <div className={s.error}>{errors.model.message?.toString()}</div>
             )}
           </div>
@@ -133,7 +120,7 @@ const Auto: React.FC = () => {
                 </option>
               ))}
             </select>
-            {errors.year && (
+            {errors?.AUTO?.year && (
               <div className={s.error}>{errors.year.message?.toString()}</div>
             )}
           </div>
@@ -153,7 +140,7 @@ const Auto: React.FC = () => {
                 </option>
               ))}
             </select>
-            {errors.mileage && (
+            {errors?.AUTO?.mileage && (
               <div className={s.error}>
                 {errors.mileage.message?.toString()}
               </div>
@@ -166,7 +153,7 @@ const Auto: React.FC = () => {
         type="submit"
         value={isEditing ? "Сохранить изменения" : "Продолжить"}
       />
-    </form>
+    </div>
   );
 };
 

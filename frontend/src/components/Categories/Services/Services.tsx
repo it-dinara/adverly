@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "Redux/hooks";
 import useReduxFormSync from "Hooks/useReduxFormSync";
 import { defaultServicesData } from "Constants/formDefaults";
-import { servicesSchema, ServicesFormValues } from "Types/form";
+import { servicesFormSchema, ServicesFormValues } from "Types/form";
 
 const serviceTypes = [
   "Ремонт",
@@ -24,7 +24,7 @@ const Services: React.FC = () => {
     formState: { errors },
   } = useReduxFormSync<ServicesFormValues>({
     formField: "SERVICES",
-    schema: servicesSchema,
+    schema: servicesFormSchema,
     defaultValues: defaultServicesData,
     mode: "onBlur",
   });

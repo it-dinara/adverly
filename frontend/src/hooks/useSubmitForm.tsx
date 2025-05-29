@@ -11,6 +11,7 @@ export default function useSubmitForm<TFormValues>(): (
   const dispatch = useAppDispatch();
 
   const onSubmit = async (data: TFormValues) => {
+    console.log("-------------", data);
     const formData = {
       ...firstStep,
       ...data,

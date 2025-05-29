@@ -4,7 +4,7 @@ import axiosInstance from "AxiosInstance";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "Redux/hooks";
 import useReduxFormSync from "Hooks/useReduxFormSync";
-import { realEstateSchema, RealEstateFormValues } from "Types/form";
+import { realEstateFormSchema, RealEstateFormValues } from "Types/form";
 import { defaultRealEstateData } from "Constants/formDefaults";
 
 const propertyTypes = [
@@ -25,7 +25,7 @@ const RealEstate: React.FC = () => {
     formState: { errors },
   } = useReduxFormSync({
     formField: "REAL_ESTATE",
-    schema: realEstateSchema,
+    schema: realEstateFormSchema,
     defaultValues: defaultRealEstateData,
     mode: "onBlur",
   });

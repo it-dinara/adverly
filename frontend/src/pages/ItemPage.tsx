@@ -39,25 +39,26 @@ const ItemPage: React.FC = () => {
 
   const handleEdit = () => {
     if (item) {
-      let categoryData: keyof typeof Categories = "AUTO";
-      // Determine the category key based on the item category
+      let categorySelectedData: keyof typeof Categories = "AUTO";
+      // Determine the categorySelected key based on the item categorySelected
       Object.entries(Categories).forEach(([key, values]) => {
-        if (values === item.category) {
-          categoryData = key as keyof typeof Categories;
+        if (values === item.categorySelected) {
+          categorySelectedData = key as keyof typeof Categories;
         }
       });
 
-      const { name, description, location, category, photo, ...rest } = item;
+      const { name, description, location, categorySelected, photo, ...rest } =
+        item;
       dispatch(
         updateData({
           field: "firstStep",
-          value: { name, description, location, category, photo },
+          value: { name, description, location, categorySelected, photo },
         })
       );
       dispatch(
         updateData({
-          field: categoryData,
-          value: rest as unknown as FormState[typeof categoryData],
+          field: categorySelectedData,
+          value: rest as unknown as FormState[typeof categorySelectedData],
         })
       );
       dispatch(updateData({ field: "id", value: item.id }));
@@ -89,7 +90,6 @@ const ItemPage: React.FC = () => {
       />
     </div>
   );
-
 
   let itemDetails = (
     <>

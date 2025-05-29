@@ -5,11 +5,30 @@ import SecondStep from "../components/Steps/SecondStep/SecondStep";
 import { useAppSelector } from "Redux/hooks";
 import { Link } from "react-router-dom";
 import s from "./FormPage.module.css";
+import useReduxFormSync from "Hooks/useReduxFormSync";
+import useSubmitForm from "Hooks/useSubmitForm";
+import { formDataSchema, FormDataValues } from "Types/form";
+import Auto from "Categories/Auto/Auto";
 
 const FormPage = () => {
   const [items, setItems] = useState<{ id: number; name: string }[]>([]);
+  const { form } = useAppSelector((state) => state.form);
 
-  const isEditing = useAppSelector((state) => state.form.isEditing);
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+    watch,
+    control,
+  } = useReduxFormSync<FormDataValues>({
+    formField: "form",
+    schema: formDataSchema,
+    mode: "onChange",
+  });
+
+  const onSubmit = useSubmitForm();
+
   useEffect(() => {
     fetchItems();
   }, []);
@@ -33,12 +52,25 @@ const FormPage = () => {
       console.error("Error deleting item:", error);
     }
   };
-  const step = useAppSelector((state) => state.form.step);
+
+  const onInvalid = (errors: any) => {
+    console.error("Validation Errors:", errors.selectedCategoryForm);
+  };
+
   return (
     <div className={s.container}>
       <div className={s.wrap}>
-        <FirstStep />
-        <SecondStep />
+        <form
+          onSubmit={handleSubmit(onSubmit, (errors: any) => onInvalid(errors))}
+        >
+          <FirstStep
+            register={register}
+            watch={watch}
+            errors={errors}
+            setValue={setValue}
+          />
+          <Auto register={register} watch={watch} errors={errors} />
+        </form>
       </div>
 
       <h2>{items.length > 0 && `Items`}</h2>
