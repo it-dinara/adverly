@@ -13,7 +13,7 @@ export type FormsTypes = keyof CategoriesType | "firstStep";
 export interface FormState extends FormDataValues {
   step: number;
   isEditing: boolean;
-  categoryVariants?: CategoryKeysType;
+  id: string;
   [key: string]: any;
 }
 
@@ -22,7 +22,7 @@ export const firstStepFormSchema = z.object({
   description: z.string().min(1, "Описание обязательно"),
   location: z.string().min(1, "Локация обязательна"),
   photo: z.instanceof(File).optional().nullable(),
-  categorySelected: z.nativeEnum(Categories, {
+  category: z.nativeEnum(Categories, {
     message: "Категория обязательна",
   }),
 });
@@ -78,7 +78,6 @@ export type SelectedCategoryFormType = z.infer<typeof selectedCategoryForm>;
 
 export const formDataSchema = firstStepFormSchema.extend({
   selectedCategoryForm,
-  id: z.string().optional(),
 });
 
 export type FormDataValues = z.infer<typeof formDataSchema>;
@@ -88,7 +87,7 @@ export interface Item {
   name: string;
   description: string;
   location: string;
-  categorySelected: CategoryKeysType;
+  category: CategoryKeysType;
   photo?: File | null;
   firstStep: FirstStepFormValues;
   AUTO?: AutoFormValues;

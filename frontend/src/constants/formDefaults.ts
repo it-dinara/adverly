@@ -50,7 +50,8 @@ export const defaultFormState = {
   ...defaultFirstStepData,
   step: 1,
   isEditing: false,
-  id: undefined,
+  id: "",
+  category: Categories.AUTO,
   selectedCategoryForm: {
     type: Categories.AUTO,
     brand: "",

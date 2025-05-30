@@ -25,6 +25,7 @@ type AutoProps = {
 };
 
 const Auto: React.FC<AutoProps> = ({ register, watch, errors }) => {
+  console.log("errors -------- ", errors);
   const { isEditing } = useAppSelector((state) => state.form);
   const [carBrands, setCarBrands] = useState<Car[]>([]);
 
@@ -43,6 +44,7 @@ const Auto: React.FC<AutoProps> = ({ register, watch, errors }) => {
 
   const selectedBrand = watch("selectedCategoryForm.brand");
   const selectedModel = watch("selectedCategoryForm.model");
+  const selectedCategoryForm = watch("selectedCategoryForm")
 
   return (
     <div className={s.form}>
@@ -56,13 +58,14 @@ const Auto: React.FC<AutoProps> = ({ register, watch, errors }) => {
             <select
               className={`${s.select} ${s.required}`}
               id="brand"
-              {...register("brand")}
+              {...register("selectedCategoryForm.brand")}
             >
               <option value={selectedBrand || ""}>
                 {typeof selectedBrand === "string"
                   ? selectedBrand
                   : "Не указано"}
               </option>
+              {console.log("selectedCategoryForm", selectedCategoryForm)}
               {carBrands.map((car) => (
                 <option key={car.id} value={car.name}>
                   {car.name}
@@ -80,7 +83,7 @@ const Auto: React.FC<AutoProps> = ({ register, watch, errors }) => {
             <select
               className={`${s.select} ${s.required}`}
               id="model"
-              {...register("model")}
+              {...register("selectedCategoryForm.model")}
             >
               <option value={selectedModel || ""}>
                 {typeof selectedModel === "string"
@@ -111,7 +114,7 @@ const Auto: React.FC<AutoProps> = ({ register, watch, errors }) => {
             <select
               className={`${s.select} ${s.required}`}
               id="year"
-              {...register("year")}
+              {...register("selectedCategoryForm.year")}
             >
               <option value={""}>{"Не указано"}</option>
               {years.map((year) => (
@@ -131,7 +134,7 @@ const Auto: React.FC<AutoProps> = ({ register, watch, errors }) => {
             <select
               className={`${s.select} ${s.required}`}
               id="mileage"
-              {...register("mileage")}
+              {...register("selectedCategoryForm.mileage")}
             >
               <option value={""}>{"Не указано"}</option>
               {carMileage.map((mileage) => (
