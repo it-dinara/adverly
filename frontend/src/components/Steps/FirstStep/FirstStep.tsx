@@ -1,16 +1,14 @@
 import React from "react";
 import { useAppDispatch, useAppSelector } from "Redux/hooks";
-import { updateStep, updatePhoto } from "Redux/slices/formSlice";
+import { updatePhoto } from "Redux/slices/formSlice";
 import s from "./FirstStep.module.css";
 import { Categories } from "Types/form";
-import useReduxFormSync from "Hooks/useReduxFormSync";
-import { FirstStepFormValues, FormDataValues } from "Types/form";
-import { defaultFirstStepData } from "Constants/formDefaults";
+import { FormState } from "Types/form";
 import { UseFormWatch } from "react-hook-form";
 
 type FirstStepProps = {
   register: any;
-  watch: UseFormWatch<FormDataValues>;
+  watch: UseFormWatch<FormState>;
   errors: any;
   setValue: any;
   [key: string]: any; // for other props like register
@@ -18,7 +16,6 @@ type FirstStepProps = {
 
 const FirstStep: React.FC<FirstStepProps> = ({
   register,
-  watch,
   errors,
   setValue,
 }) => {
@@ -30,11 +27,6 @@ const FirstStep: React.FC<FirstStepProps> = ({
     const file = e.target.files ? e.target.files[0] : null;
     setValue("photo", file, { shouldValidate: true });
     dispatch(updatePhoto(file));
-  };
-
-  const onSubmit = (data: FirstStepFormValues) => {
-    dispatch(updateStep(2));
-    console.log("Form submitted:", data);
   };
 
   return (
@@ -115,8 +107,8 @@ const FirstStep: React.FC<FirstStepProps> = ({
             </option>
           ))}
         </select>
-        {errors.categoryVariants && (
-          <div className={s.error}>{errors.categoryVariants.message}</div>
+        {errors?.category && (
+          <div className={s.error}>{errors.category.message}</div>
         )}
       </div>
     </div>

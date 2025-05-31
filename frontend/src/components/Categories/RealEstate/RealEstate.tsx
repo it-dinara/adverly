@@ -1,11 +1,8 @@
 import React from "react";
 import s from "./RealEstate.module.css";
-import axiosInstance from "AxiosInstance";
-import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "Redux/hooks";
-import useReduxFormSync from "Hooks/useReduxFormSync";
-import { realEstateFormSchema, RealEstateFormValues } from "Types/form";
-import { defaultRealEstateData } from "Constants/formDefaults";
+import { FormState } from "Types/form";
+import { UseFormWatch } from "react-hook-form";
 
 const propertyTypes = [
   "Квартира",
@@ -15,40 +12,17 @@ const propertyTypes = [
   "Земельный участок",
 ];
 
-const RealEstate: React.FC = () => {
-  const navigate = useNavigate();
-  const { isEditing, id, firstStep } = useAppSelector((state) => state.form);
+type RealEstateProps = {
+  register: any;
+  errors: any;
+  [key: string]: any; // for other props like register
+};
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useReduxFormSync({
-    formField: "REAL_ESTATE",
-    schema: realEstateFormSchema,
-    defaultValues: defaultRealEstateData,
-    mode: "onBlur",
-  });
-
-  const onSubmit = async (data: RealEstateFormValues) => {
-    const formData = {
-      ...firstStep,
-      ...data,
-    };
-    try {
-      if (isEditing) {
-        await axiosInstance.put(`/items/${id}`, formData);
-      } else {
-        await axiosInstance.post(`/items`, formData);
-      }
-      navigate(`/list`);
-    } catch (error) {
-      console.error("Error submitting item:", error);
-    }
-  };
+const RealEstate: React.FC<RealEstateProps> = ({ register, errors }) => {
+  const { isEditing } = useAppSelector((state) => state.form);
 
   return (
-    <form className={s.form} onSubmit={handleSubmit(onSubmit)}>
+    <div className={s.form}>
       <h2 className={s.heading}>{"Недвижимость"}</h2>
       <div className={s.formGroup}>
         <label className={`${s.label} ${s.required}`} htmlFor="propertyType">
@@ -119,7 +93,7 @@ const RealEstate: React.FC = () => {
         type="submit"
         value={isEditing ? "Сохранить изменения" : "Продолжить"}
       />
-    </form>
+    </div>
   );
 };
 

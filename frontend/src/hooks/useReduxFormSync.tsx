@@ -59,7 +59,7 @@ export default function useReduxFormSync<T extends FieldValues>({
       debounce((data) => {
         console.log("formField", formField, "data", data);
 
-        dispatch(updateData({ field: formField, value: data }));
+        dispatch(updateData({ field: "form", value: data }));
       }, 1000),
     [dispatch, formField]
   )();

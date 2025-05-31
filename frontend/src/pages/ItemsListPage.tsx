@@ -5,6 +5,7 @@ import Pagination from "../components/Pagination/Pagination";
 import { fetchItems } from "Redux/slices/itemsListSlice";
 import { Categories, FilterOptionsType } from "Types/form";
 import s from "./ItemsListPage.module.css";
+import { resetForm, setEditing } from "Redux/slices/formSlice";
 
 const filterOptions: FilterOptionsType = {
   [Categories.REAL_ESTATE]: {
@@ -78,6 +79,11 @@ const ItemsListPage: React.FC = () => {
     setCategory(selectedCategory);
     setAdditionalFilters({}); // Сброс фильтров при смене категории
   }
+
+  useEffect(() => {
+    dispatch(setEditing(false));
+    dispatch(resetForm());
+  }, []);
 
   return (
     <div className={s.container}>

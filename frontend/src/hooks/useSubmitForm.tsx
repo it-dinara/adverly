@@ -2,38 +2,20 @@ import { useAppSelector, useAppDispatch } from "Redux/hooks";
 import axiosInstance from "AxiosInstance";
 import { useNavigate } from "react-router-dom";
 import { resetForm } from "Redux/slices/formSlice";
-import { FormDataValues } from "Types/form";
+import { FormState } from "Types/form";
 
-export default function useSubmitForm(): (
-  data: FormDataValues
-) => Promise<void> {
+export default function useSubmitForm(): (data: FormState) => Promise<void> {
   const navigate = useNavigate();
   const { isEditing, id, firstStep } = useAppSelector((state) => state.form);
   const dispatch = useAppDispatch();
 
-  const onSubmit = async (data: FormDataValues) => {
-    const {
-      name,
-      description,
-      location,
-      photo,
-      category,
-      selectedCategoryForm,
-    } = data;
-    const formData = {
-      name,
-      description,
-      location,
-      photo,
-      category,
-      ...selectedCategoryForm,
-    };
+  const onSubmit = async (data: FormState) => {
     try {
       if (isEditing) {
         console.log("Editing item with ID:", firstStep, "id", id);
-        await axiosInstance.put(`/items/${id}`, formData);
+        await axiosInstance.put(`/items/${id}`, data);
       } else {
-        await axiosInstance.post(`/items`, formData);
+        await axiosInstance.post(`/items`, data);
       }
       dispatch(resetForm());
       navigate(`/list`);

@@ -39,30 +39,12 @@ const ItemPage: React.FC = () => {
 
   const handleEdit = () => {
     if (item) {
-      let categoryData: keyof typeof Categories = "AUTO";
-      // Determine the category key based on the item category
-      Object.entries(Categories).forEach(([key, values]) => {
-        if (values === item.category) {
-          categoryData = key as keyof typeof Categories;
-        }
-      });
-
-      const { name, description, location, category, photo, ...rest } = item;
       dispatch(
         updateData({
-          field: "firstStep",
-          value: { name, description, location, category, photo },
+          field: "form",
+          value: item,
         })
       );
-      dispatch(
-        updateData({
-          field: categoryData,
-          value: rest as unknown as FormState[typeof categoryData],
-        })
-      );
-      dispatch(updateData({ field: "id", value: item.id }));
-
-      // dispatch(updateData({ field: "step", value: 2 }));
     }
     dispatch(setEditing(true));
   };

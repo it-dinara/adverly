@@ -1,11 +1,8 @@
 import React from "react";
 import s from "./Services.module.css";
-import axiosInstance from "AxiosInstance";
-import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "Redux/hooks";
-import useReduxFormSync from "Hooks/useReduxFormSync";
-import { defaultServicesData } from "Constants/formDefaults";
-import { servicesFormSchema, ServicesFormValues } from "Types/form";
+import { FormState } from "Types/form";
+import { UseFormWatch } from "react-hook-form";
 
 const serviceTypes = [
   "Ремонт",
@@ -15,40 +12,17 @@ const serviceTypes = [
   "Стрижка",
 ];
 
-const Services: React.FC = () => {
-  const navigate = useNavigate();
+type ServicesProps = {
+  register: any;
+  errors: any;
+  [key: string]: any; // for other props like register
+};
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useReduxFormSync<ServicesFormValues>({
-    formField: "SERVICES",
-    schema: servicesFormSchema,
-    defaultValues: defaultServicesData,
-    mode: "onBlur",
-  });
-
-  const { firstStep, id, isEditing } = useAppSelector((state) => state.form);
-
-  const onSubmit = async (data: ServicesFormValues) => {
-    try {
-      if (isEditing) {
-        await axiosInstance.put(`/items/${id}`, {
-          ...firstStep,
-          ...data,
-        });
-      } else {
-        await axiosInstance.post(`/items`, { ...firstStep, ...data });
-      }
-      navigate(`/list`);
-    } catch (error) {
-      console.error("Error submitting item:", error);
-    }
-  };
+const Services: React.FC<ServicesProps> = ({ register, errors }) => {
+  const { isEditing } = useAppSelector((state) => state.form);
 
   return (
-    <form className={s.form} onSubmit={handleSubmit(onSubmit)}>
+    <div className={s.form}>
       <h2 className={s.heading}>{"Услуги"}</h2>
       <div className={s.formGroup}>
         <label className={`${s.label} ${s.required}`} htmlFor="serviceType">
@@ -117,7 +91,7 @@ const Services: React.FC = () => {
         type="submit"
         value={isEditing ? "Сохранить изменения" : "Продолжить"}
       />
-    </form>
+    </div>
   );
 };
 

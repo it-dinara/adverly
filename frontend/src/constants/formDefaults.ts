@@ -3,11 +3,28 @@ import {
   RealEstateFormValues,
   ServicesFormValues,
   Categories,
-  SelectedCategoryFormType,
+  FormStateValues,
+  CommonFields,
+  FirstStepFormValues,
 } from "Types/form";
+
+export const defaultCommonFields: CommonFields = {
+  step: 1,
+  isEditing: false,
+  id: "",
+};
+
+export const defaultFirstStepData: FirstStepFormValues = {
+  name: "",
+  description: "",
+  location: "",
+  photo: null,
+  category: Categories.AUTO, // Default category
+};
 
 // Default values for Auto category
 export const defaultAutoData: AutoFormValues = {
+  ...defaultFirstStepData,
   brand: "",
   model: "",
   year: new Date().getFullYear(),
@@ -16,6 +33,7 @@ export const defaultAutoData: AutoFormValues = {
 
 // Default values for Real Estate category
 export const defaultRealEstateData: RealEstateFormValues = {
+  ...defaultFirstStepData,
   propertyType: "",
   area: 0,
   rooms: 0,
@@ -24,39 +42,19 @@ export const defaultRealEstateData: RealEstateFormValues = {
 
 // Default values for Services category
 export const defaultServicesData: ServicesFormValues = {
+  ...defaultFirstStepData,
   serviceType: "",
   experience: 0,
   cost: 0,
   schedule: "",
 };
 
-export const defaultFirstStepData = {
-  name: "",
-  description: "",
-  location: "",
-  photo: null,
-  categorySelected: Categories.AUTO, // Default category
-};
-
-export const defaultFormData = {
-  ...defaultFirstStepData,
-  autoData: defaultAutoData,
-  realEstateData: defaultRealEstateData,
-  servicesData: defaultServicesData,
-};
-
 // Combine all defaults into one object
-export const defaultFormState = {
+export const defaultFormState: FormStateValues = {
   ...defaultFirstStepData,
-  step: 1,
-  isEditing: false,
-  id: "",
   category: Categories.AUTO,
-  selectedCategoryForm: {
-    type: Categories.AUTO,
-    brand: "",
-    model: "",
-    year: 0,
-    mileage: undefined,
-  },
+  brand: "",
+  model: "",
+  year: 0,
+  mileage: undefined,
 };

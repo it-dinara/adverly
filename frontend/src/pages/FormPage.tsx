@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import FirstStep from "../components/Steps/FirstStep/FirstStep";
-import SecondStep from "../components/Steps/SecondStep/SecondStep";
-import { useAppSelector } from "Redux/hooks";
 import { Link } from "react-router-dom";
 import s from "./FormPage.module.css";
 import useReduxFormSync from "Hooks/useReduxFormSync";
 import useSubmitForm from "Hooks/useSubmitForm";
-import { formDataSchema, FormDataValues } from "Types/form";
-import Auto from "Categories/Auto/Auto";
+import { formStateSchema, FormStateValues } from "Types/form";
+import SecondStep from "../components/Steps/SecondStep/SecondStep";
 
 const FormPage = () => {
   const [items, setItems] = useState<{ id: number; name: string }[]>([]);
-  const { form } = useAppSelector((state) => state.form);
 
   const {
     register,
@@ -20,10 +17,9 @@ const FormPage = () => {
     setValue,
     formState: { errors },
     watch,
-    control,
-  } = useReduxFormSync<FormDataValues>({
+  } = useReduxFormSync<FormStateValues>({
     formField: "form",
-    schema: formDataSchema,
+    schema: formStateSchema,
     mode: "onChange",
   });
 
@@ -54,7 +50,7 @@ const FormPage = () => {
   };
 
   const onInvalid = (errors: any) => {
-    console.error("Validation Errors:", errors.selectedCategoryForm);
+    console.error("Validation Errors:", errors);
   };
 
   return (
@@ -69,7 +65,7 @@ const FormPage = () => {
             errors={errors}
             setValue={setValue}
           />
-          <Auto register={register} watch={watch} errors={errors} />
+          <SecondStep register={register} watch={watch} errors={errors} />
         </form>
       </div>
 

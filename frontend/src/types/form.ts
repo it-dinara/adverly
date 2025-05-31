@@ -10,12 +10,12 @@ export type CategoriesType = typeof Categories;
 export type CategoryKeysType = CategoriesType[keyof CategoriesType];
 export type FormsTypes = keyof CategoriesType | "firstStep";
 
-export interface FormState extends FormDataValues {
+export type CommonFields = Partial<{
   step: number;
   isEditing: boolean;
   id: string;
   [key: string]: any;
-}
+}>;
 
 export const firstStepFormSchema = z.object({
   name: z.string().min(1, "Название обязательно"),
@@ -29,16 +29,16 @@ export const firstStepFormSchema = z.object({
 
 export type FirstStepFormValues = z.infer<typeof firstStepFormSchema>;
 
-export const autoFormSchema = z.object({
+export const autoFormSchema = firstStepFormSchema.extend({
   brand: z.string().min(1, "Марка обязательна"),
   model: z.string().min(1, "Модель обязательна"),
-  year: z.coerce.number().positive().min(1900, "Укажите год выпуска"),
+  year: z.coerce.number().min(1900, "Укажите год выпуска"),
   mileage: z.coerce.number().optional(),
 });
 
 export type AutoFormValues = z.infer<typeof autoFormSchema>;
 
-export const realEstateFormSchema = z.object({
+export const realEstateFormSchema = firstStepFormSchema.extend({
   propertyType: z.string().min(1, "Тип недвижимости обязателен"),
   area: z.coerce.number().positive("Площадь должна быть положительным числом"),
   rooms: z.coerce
@@ -49,7 +49,7 @@ export const realEstateFormSchema = z.object({
 
 export type RealEstateFormValues = z.infer<typeof realEstateFormSchema>;
 
-export const servicesFormSchema = z.object({
+export const servicesFormSchema = firstStepFormSchema.extend({
   serviceType: z.string().min(1, "Тип услуги обязателен"),
   experience: z.coerce
     .number()
@@ -62,25 +62,26 @@ export const servicesFormSchema = z.object({
 
 export type ServicesFormValues = z.infer<typeof servicesFormSchema>;
 
-export const selectedCategoryForm = z.discriminatedUnion("type", [
-  z.object({ type: z.literal(Categories.AUTO), ...autoFormSchema.shape }),
+function omitCategory<T extends z.ZodRawShape>(shape: T): Omit<T, "category"> {
+  const { category, ...rest } = shape;
+  return rest as Omit<T, "category">;
+}
+
+export const formStateSchema = z.discriminatedUnion("category", [
+  z.object({ category: z.literal(Categories.AUTO), ...omitCategory(autoFormSchema.shape) }),
   z.object({
-    type: z.literal(Categories.REAL_ESTATE),
-    ...realEstateFormSchema.shape,
+    category: z.literal(Categories.REAL_ESTATE),
+    ...omitCategory(realEstateFormSchema.shape),
   }),
   z.object({
-    type: z.literal(Categories.SERVICES),
-    ...servicesFormSchema.shape,
+    category: z.literal(Categories.SERVICES),
+    ...omitCategory(servicesFormSchema.shape),
   }),
 ]);
 
-export type SelectedCategoryFormType = z.infer<typeof selectedCategoryForm>;
+export type FormStateValues = z.infer<typeof formStateSchema>;
 
-export const formDataSchema = firstStepFormSchema.extend({
-  selectedCategoryForm,
-});
-
-export type FormDataValues = z.infer<typeof formDataSchema>;
+export type FormState = z.infer<typeof formStateSchema> & CommonFields;
 
 export interface Item {
   id: string;
