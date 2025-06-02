@@ -126,12 +126,3 @@ export interface CarBrand {
   models: CarModel[];
 }
 
-export interface CarBrands {
-  [key: string]: CarBrand[];
-}
-
-export type FilterOptionsType = {
-  [key in typeof Categories as string]: {
-    [key: string]: string[] | number[];
-  };
-};

@@ -3,25 +3,61 @@ import { Link } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "Redux/hooks";
 import Pagination from "../components/Pagination/Pagination";
 import { fetchItems } from "Redux/slices/itemsListSlice";
-import { Categories, FilterOptionsType } from "Types/form";
+import { Categories, CategoriesType } from "Types/form";
 import s from "./ItemsListPage.module.css";
 import { resetForm, setEditing } from "Redux/slices/formSlice";
 
+type FilterOption = {
+  title: string;
+  variants: string[] | number[];
+};
+
+type FilterOptionsType = {
+  [K in Exclude<
+    CategoriesType[keyof CategoriesType],
+    CategoriesType["DEFAULT"]
+  >]: Record<string, FilterOption>;
+};
+
 const filterOptions: FilterOptionsType = {
   [Categories.REAL_ESTATE]: {
-    propertyType: ["Квартира", "Дом", "Коттедж"],
-    rooms: [1, 2, 3, 4, 5],
-    price: ["До 1 млн", "1-5 млн", "5-10 млн", "10+ млн"],
+    propertyType: {
+      title: "Тип недвижимости",
+      variants: ["Квартира", "Дом", "Коттедж"],
+    },
+    rooms: { title: "Количество комнат", variants: [1, 2, 3, 4, 5] },
+    price: {
+      title: "Цена",
+      variants: ["До 1 млн", "1-5 млн", "5-10 млн", "10+ млн"],
+    },
   },
   [Categories.AUTO]: {
-    brand: ["Toyota", "BMW", "Mercedes"],
-    year: [2015, 2016, 2017, 2018, 2019, 2020],
-    mileage: ["0-50 тыс", "50-100 тыс", "100+ тыс"],
+    brand: {
+      title: "Марка",
+      variants: ["Toyota", "BMW", "Mercedes"],
+    },
+    year: {
+      title: "Год выпуска",
+      variants: [2015, 2016, 2017, 2018, 2019, 2020],
+    },
+    mileage: {
+      title: "Пробег",
+      variants: ["0-50 тыс", "50-100 тыс", "100+ тыс"],
+    },
   },
   [Categories.SERVICES]: {
-    serviceType: ["Ремонт", "Уборка", "Доставка"],
-    experience: ["1-3 года", "3-5 лет", "5+ лет"],
-    cost: ["До 1000 руб", "1000-5000 руб", "5000+ руб"],
+    serviceType: {
+      title: "Тип услуги",
+      variants: ["Ремонт", "Уборка", "Доставка"],
+    },
+    experience: {
+      title: "Опыт работы",
+      variants: ["1-3 года", "3-5 лет", "5+ лет"],
+    },
+    cost: {
+      title: "Стоимость",
+      variants: ["До 1000 руб", "1000-5000 руб", "5000+ руб"],
+    },
   },
 };
 
@@ -105,31 +141,30 @@ const ItemsListPage: React.FC = () => {
           <option value={Categories.AUTO}>{Categories.AUTO}</option>
           <option value={Categories.SERVICES}>{Categories.SERVICES}</option>
         </select>
-
-        {category &&
-          Object.entries(filterOptions[category] || {}).map(
-            ([key, options]) => (
-              <select
-                key={key}
-                name={key}
-                className={s.selectBox}
-                onChange={(e) =>
-                  setAdditionalFilters({
-                    ...additionalFilters,
-                    [key]: e.target.value,
-                  })
-                }
-              >
-                <option value="">Выберите {key}</option>
-                {options.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            )
-          )}
-
+        {/* Type guard for category to ensure it's a valid key */}
+        {category in filterOptions &&
+          Object.entries(
+            filterOptions[category as keyof typeof filterOptions] || {}
+          ).map(([key, options]) => (
+            <select
+              key={key}
+              name={key}
+              className={s.selectBox}
+              onChange={(e) =>
+                setAdditionalFilters({
+                  ...additionalFilters,
+                  [key]: e.target.value,
+                })
+              }
+            >
+              <option value="">{options.title}</option>
+              {options.variants.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          ))}
         <input
           type="search"
           className={s.searchBox}

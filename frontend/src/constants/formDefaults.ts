@@ -53,5 +53,4 @@ export const defaultServicesData: ServicesFormValues = {
 export const defaultFormState: FormStateValues = {
   ...defaultFirstStepData,
   category: Categories.DEFAULT,
-
 };

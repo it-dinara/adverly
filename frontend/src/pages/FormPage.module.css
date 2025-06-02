@@ -18,6 +18,7 @@
   align-self: center; /* Выравнивание элементов */
   gap: 15px;
   transition: all 0.5s, display 0.5s allow-discrete;
+  margin-top: 15px;
 }
 
 @media (min-width: 768px) {

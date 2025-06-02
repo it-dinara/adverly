@@ -1,10 +1,10 @@
+import AxiosInstance from "AxiosInstance";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Item, Categories, FormState } from "Types/form";
 import { useAppDispatch } from "Redux/hooks";
-import s from "./ItemPage.module.css";
-import AxiosInstance from "AxiosInstance";
 import { setEditing, updateData } from "Redux/slices/formSlice";
+import { Item } from "Types/form";
+import s from "./ItemPage.module.css";
 
 const ItemPage: React.FC = () => {
   const [item, setItem] = useState<Item | null>(null);
