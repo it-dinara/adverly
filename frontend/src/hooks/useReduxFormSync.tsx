@@ -50,7 +50,6 @@ export default function useReduxFormSync<T extends FieldValues>({
   }, [setValue]);
 
   // Create a debounced update function that dispatches the updated data.
-  // IMPORTANT: Use the provided formField instead of a hardcoded value.
   const debouncedUpdate = useMemo(
     () =>
       debounce((data) => {

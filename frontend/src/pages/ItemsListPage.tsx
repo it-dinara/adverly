@@ -141,7 +141,6 @@ const ItemsListPage: React.FC = () => {
           <option value={Categories.AUTO}>{Categories.AUTO}</option>
           <option value={Categories.SERVICES}>{Categories.SERVICES}</option>
         </select>
-        {/* Type guard for category to ensure it's a valid key */}
         {category in filterOptions &&
           Object.entries(
             filterOptions[category as keyof typeof filterOptions] || {}

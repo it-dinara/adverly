@@ -1,21 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-
-interface Item {
-  id: number;
-  name: string;
-  description: string;
-  location: string;
-  type: string;
-  [key: string]: any; // To accommodate additional fields
-}
-
-interface ItemsState {
-  items: Item[];
-  currentPage: number;
-  itemsPerPage: number;
-  error?: string | null;
-}
+import { ItemsState, Item } from "Types/itemList";
 
 const initialState: ItemsState = {
   items: [],

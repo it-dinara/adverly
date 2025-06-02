@@ -11,7 +11,7 @@ module.exports = {
     alias: {
       Pages: path.resolve(__dirname, "src/pages"),
       Redux: path.resolve(__dirname, "src/redux"),
-      AxiosInstance: path.resolve(__dirname, "src/axios-adverly.ts"),
+      AxiosAdverly: path.resolve(__dirname, "src/axios-adverly.ts"),
       Types: path.resolve(__dirname, "src/types"),
       Categories: path.resolve(__dirname, "src/components/Categories"),
       Utils: path.resolve(__dirname, "src/utils"),

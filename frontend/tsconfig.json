@@ -9,7 +9,7 @@
     "baseUrl": "./",
     "paths": {
       "Redux/*": ["src/redux/*"],
-      "AxiosInstance": ["src/axios-adverly.ts"],
+      "AxiosAdverly": ["src/axios-adverly.ts"],
       "Pages/*": ["src/pages/*"],
       "Types/*": ["src/types/*"],
       "Categories/*": ["src/components/Categories/*"],

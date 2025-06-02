@@ -1,8 +1,6 @@
 import React from "react";
 import s from "./RealEstate.module.css";
 import { useAppSelector } from "Redux/hooks";
-import { FormState } from "Types/form";
-import { UseFormWatch } from "react-hook-form";
 
 const propertyTypes = [
   "Квартира",

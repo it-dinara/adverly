@@ -1,4 +1,4 @@
-import AxiosInstance from "AxiosInstance";
+import AxiosInstance from "AxiosAdverly";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAppDispatch } from "Redux/hooks";
@@ -58,7 +58,7 @@ const ItemPage: React.FC = () => {
     );
   });
 
-  let photo = item && item.AUTO && (
+  let photo = item && (
     <div className={s.imageContainer} key={"photo"}>
       <img
         className={s.image}
