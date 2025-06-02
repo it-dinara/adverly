@@ -19,7 +19,7 @@ export const defaultFirstStepData: FirstStepFormValues = {
   description: "",
   location: "",
   photo: null,
-  category: Categories.AUTO, // Default category
+  category: Categories.DEFAULT, // Default category
 };
 
 // Default values for Auto category
@@ -52,9 +52,6 @@ export const defaultServicesData: ServicesFormValues = {
 // Combine all defaults into one object
 export const defaultFormState: FormStateValues = {
   ...defaultFirstStepData,
-  category: Categories.AUTO,
-  brand: "",
-  model: "",
-  year: 0,
-  mileage: undefined,
+  category: Categories.DEFAULT,
+
 };

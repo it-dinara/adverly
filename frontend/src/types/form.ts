@@ -1,14 +1,21 @@
 import { z } from "zod";
 
 export const Categories = {
+  DEFAULT: "",
   REAL_ESTATE: "Недвижимость",
   AUTO: "Авто",
   SERVICES: "Услуги",
 } as const;
 
+// Create an enum for the valid, non-empty categories.
+const CategoryEnum = z.enum([
+  Categories.REAL_ESTATE,
+  Categories.AUTO,
+  Categories.SERVICES,
+]);
+
 export type CategoriesType = typeof Categories;
 export type CategoryKeysType = CategoriesType[keyof CategoriesType];
-export type FormsTypes = keyof CategoriesType | "firstStep";
 
 export type CommonFields = Partial<{
   step: number;
@@ -22,8 +29,8 @@ export const firstStepFormSchema = z.object({
   description: z.string().min(1, "Описание обязательно"),
   location: z.string().min(1, "Локация обязательна"),
   photo: z.instanceof(File).optional().nullable(),
-  category: z.nativeEnum(Categories, {
-    message: "Категория обязательна",
+  category: z.nativeEnum(Categories).refine((val) => val.length > 1, {
+    message: "Выберите категорию",
   }),
 });
 
@@ -68,7 +75,10 @@ function omitCategory<T extends z.ZodRawShape>(shape: T): Omit<T, "category"> {
 }
 
 export const formStateSchema = z.discriminatedUnion("category", [
-  z.object({ category: z.literal(Categories.AUTO), ...omitCategory(autoFormSchema.shape) }),
+  z.object({
+    category: z.literal(Categories.AUTO),
+    ...omitCategory(autoFormSchema.shape),
+  }),
   z.object({
     category: z.literal(Categories.REAL_ESTATE),
     ...omitCategory(realEstateFormSchema.shape),
@@ -77,6 +87,7 @@ export const formStateSchema = z.discriminatedUnion("category", [
     category: z.literal(Categories.SERVICES),
     ...omitCategory(servicesFormSchema.shape),
   }),
+  z.object({ category: z.literal(Categories.DEFAULT) }),
 ]);
 
 export type FormStateValues = z.infer<typeof formStateSchema>;

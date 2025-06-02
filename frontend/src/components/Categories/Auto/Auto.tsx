@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import s from "./Auto.module.css";
 import { Categories, Car, FormState } from "Types/form";
 import axios from "axios";
@@ -19,33 +19,99 @@ type AutoProps = {
   register: any;
   watch: UseFormWatch<FormState>;
   errors: any;
-  [key: string]: any; // for other props like register
+  setValue: any;
+  [key: string]: any; // for any other props
 };
 
 const Auto: React.FC<AutoProps> = ({ register, watch, errors }) => {
   const { isEditing } = useAppSelector((state) => state.form);
   const [carBrands, setCarBrands] = useState<Car[]>([]);
 
-  // Fetch car brands data
+  // Fetch car brands data once on mount
   useEffect(() => {
     const fetchCarBrands = async () => {
       try {
-        const { data } = await axios.get<Car[]>(`/cars.json`);
+        const { data } = await axios.get<Car[]>("/cars.json");
         setCarBrands(data);
-      } catch (error) {}
+      } catch (error) {
+        console.error("Error fetching car brands:", error);
+      }
     };
+
     fetchCarBrands();
   }, []);
 
-  let selectedBrand = watch("brand");
+  // Extract frequently watched field values for clarity
+  const selectedBrand = watch("brand") || "";
+  const selectedModel = watch("model") || "";
+
+  // Memoize filtered models so we don’t re-compute on every render
+  const models = useMemo(
+    () => carBrands.find((car) => car.name === selectedBrand)?.models || [],
+    [carBrands, selectedBrand]
+  );
+
+  // Render functions for cleaner JSX
+  const renderBrandOptions = () => (
+    <>
+      <option value={selectedBrand}>{selectedBrand || "Не указано"}</option>
+      {carBrands.map((car) => (
+        <option key={car.id} value={car.name}>
+          {car.name}
+        </option>
+      ))}
+    </>
+  );
+
+  const renderModelOptions = () => (
+    <>
+      <option
+        value={
+          models.find((model) => model.name === selectedModel)?.name ||
+          ""
+        }
+      >
+        {selectedModel &&
+        models.find((model) => model.name === selectedModel)?.name
+          ? selectedModel
+          : "Выберите модель"}
+      </option>
+      {models.map((model) => (
+        <option key={model.id} value={model.name}>
+          {model.name}
+        </option>
+      ))}
+    </>
+  );
+
+  const renderYearOptions = () => (
+    <>
+      <option value="">{"Не указано"}</option>
+      {years.map((year) => (
+        <option key={year} value={year}>
+          {year}
+        </option>
+      ))}
+    </>
+  );
+
+  const renderMileageOptions = () => (
+    <>
+      <option value="">{"Не указано"}</option>
+      {carMileage.map((mileage) => (
+        <option key={mileage} value={mileage}>
+          {mileage}
+        </option>
+      ))}
+    </>
+  );
 
   return (
     <div className={s.form}>
-      <h2 className={s.heading}>{"Авто"}</h2>
+      <h2 className={s.heading}>Авто</h2>
       {Categories.AUTO && (
         <>
           <div className={s.formGroup}>
-            {console.log("errors", errors)}
             <label className={`${s.label} ${s.required}`} htmlFor="brand">
               Марка *
             </label>
@@ -54,21 +120,13 @@ const Auto: React.FC<AutoProps> = ({ register, watch, errors }) => {
               id="brand"
               {...register("brand")}
             >
-              <option value={watch("brand") || ""}>
-                {typeof watch("brand") === "string"
-                  ? watch("brand")
-                  : "Не указано"}
-              </option>
-              {carBrands.map((car) => (
-                <option key={car.id} value={car.name}>
-                  {car.name}
-                </option>
-              ))}
+              {renderBrandOptions()}
             </select>
             {errors?.brand && (
               <div className={s.error}>{errors.brand.message?.toString()}</div>
             )}
           </div>
+
           <div className={s.formGroup}>
             <label className={`${s.label} ${s.required}`} htmlFor="model">
               Модель *
@@ -78,28 +136,13 @@ const Auto: React.FC<AutoProps> = ({ register, watch, errors }) => {
               id="model"
               {...register("model")}
             >
-              <option value={watch("model") || ""}>
-                {typeof watch("model") === "string"
-                  ? watch("model")
-                  : "Не указано"}
-              </option>
-              {/* Filter car brands based on the selected brand */}
-              {carBrands
-                .find((car) => {
-                  return car.name === selectedBrand;
-                })
-                ?.models?.map((m) => {
-                  return (
-                    <option key={m.id} value={m.name}>
-                      {m.name}
-                    </option>
-                  );
-                })}
+              {renderModelOptions()}
             </select>
             {errors?.model && (
               <div className={s.error}>{errors.model.message?.toString()}</div>
             )}
           </div>
+
           <div className={s.formGroup}>
             <label className={`${s.label} ${s.required}`} htmlFor="year">
               Год выпуска *
@@ -109,17 +152,13 @@ const Auto: React.FC<AutoProps> = ({ register, watch, errors }) => {
               id="year"
               {...register("year")}
             >
-              <option value={""}>{"Не указано"}</option>
-              {years.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
+              {renderYearOptions()}
             </select>
             {errors?.year && (
               <div className={s.error}>{errors.year.message?.toString()}</div>
             )}
           </div>
+
           <div className={s.formGroup}>
             <label className={s.label} htmlFor="mileage">
               Пробег (км)
@@ -129,12 +168,7 @@ const Auto: React.FC<AutoProps> = ({ register, watch, errors }) => {
               id="mileage"
               {...register("mileage")}
             >
-              <option value={""}>{"Не указано"}</option>
-              {carMileage.map((mileage) => (
-                <option key={mileage} value={Number(mileage)}>
-                  {mileage}
-                </option>
-              ))}
+              {renderMileageOptions()}
             </select>
             {errors?.mileage && (
               <div className={s.error}>
@@ -144,6 +178,7 @@ const Auto: React.FC<AutoProps> = ({ register, watch, errors }) => {
           </div>
         </>
       )}
+
       <input
         className={s.button}
         type="submit"

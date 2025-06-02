@@ -99,11 +99,17 @@ const FirstStep: React.FC<FirstStepProps> = ({
         <label className={`${s.label} ${s.required}`} htmlFor="category">
           Категория *
         </label>
-        <select className={s.select} id="category" {...register("category")}>
-          <option value="">Выберите категорию *</option>
+        <select
+          className={s.select}
+          id="category"
+          {...register("category")}
+          defaultValue={""}
+        >
           {Object.values(Categories).map((category) => (
             <option key={category} value={category}>
-              {category}
+              {category === Categories.DEFAULT
+                ? "Выберите категорию"
+                : category}
             </option>
           ))}
         </select>

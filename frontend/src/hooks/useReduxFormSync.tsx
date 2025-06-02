@@ -1,23 +1,23 @@
-import { useEffect, useCallback } from "react";
+import { useMemo, useEffect } from "react";
 import {
   useForm,
+  FieldValues,
   UseFormReturn,
   DefaultValues,
   Path,
-  FieldValues,
 } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import debounce from "Utils/debounce";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useAppDispatch, useAppSelector } from "Redux/hooks";
 import { updateData } from "Redux/slices/formSlice";
-import { ZodType } from "zod";
+import type { ZodType } from "zod";
 import { FormState } from "Types/form";
 
 interface UseReduxFormSyncProps<T extends FieldValues> {
-  formField: keyof FormState; // e.g. "AUTO", "SERVICES"
+  formField: keyof FormState; // e.g. "AUTO", "SERVICES", etc.
   schema: ZodType<T, any, T>; // Zod schema for validation
   defaultValues?: T; // optional default values
-  mode?: "onChange" | "onBlur" | "onSubmit"; // optional mode for form validation
+  mode?: "onChange" | "onBlur" | "onSubmit"; // form validation mode
 }
 
 export default function useReduxFormSync<T extends FieldValues>({
@@ -26,53 +26,52 @@ export default function useReduxFormSync<T extends FieldValues>({
   defaultValues = {} as T,
   mode,
 }: UseReduxFormSyncProps<T>): UseFormReturn<T> {
-  // Select the current state slice (e.g., state.form.AUTO)
+  // Select the whole form state (or a specific slice) from the Redux store
   const storedData = useAppSelector((state) => state.form);
-
   const dispatch = useAppDispatch();
 
+  // Initialize the form with stored values if available
   const methods = useForm<T>({
     resolver: zodResolver(schema),
-    // Initialize with stored data, if available, otherwise your provided default
     defaultValues: (storedData
       ? storedData
       : defaultValues) as DefaultValues<T>,
-    mode: mode,
+    mode,
   });
   const { setValue, watch } = methods;
 
-  // When the component mounts, load stored values into the form
+  // On mount (or when storedData changes), load stored values into the form fields
   useEffect(() => {
     if (storedData) {
-      console.log("storedData", storedData);
-      const dataKeys = Object.keys(storedData);
-      dataKeys.forEach((key) => {
+      Object.keys(storedData).forEach((key) => {
         setValue(key as Path<T>, storedData[key]);
       });
-      // setValue("form", storedData);
     }
-    return () => {};
   }, [setValue]);
 
-  const { debounced, cancel } = useCallback(
+  // Create a debounced update function that dispatches the updated data.
+  // IMPORTANT: Use the provided formField instead of a hardcoded value.
+  const debouncedUpdate = useMemo(
     () =>
       debounce((data) => {
-        console.log("formField", formField, "data", data);
-
-        dispatch(updateData({ field: "form", value: data }));
+        console.log("formField:", formField, "data:", data);
+        dispatch(
+          updateData({ field: formField as string | number, value: data })
+        );
       }, 1000),
     [dispatch, formField]
-  )();
+  );
 
+  // Subscribe to form changes and update the Redux store
   useEffect(() => {
     const subscription = watch((data) => {
-      debounced(data);
+      debouncedUpdate.debounced(data);
     });
     return () => {
       subscription.unsubscribe();
-      cancel();
+      debouncedUpdate.cancel();
     };
-  }, [watch, debounced, cancel]);
+  }, [watch, debouncedUpdate]);
 
   return methods;
 }

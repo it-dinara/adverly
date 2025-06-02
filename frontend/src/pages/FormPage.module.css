@@ -3,19 +3,29 @@
   margin: 0 auto;
 }
 
+.wrap {
+  display: grid;
+  height: 75vh;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(300px, 35%)
+  ); /* Равномерное распределение колонок */
+  justify-content: center; /* Центрирование содержимого */
+  align-self: center; /* Выравнивание элементов */
+  gap: 15px;
+  transition: all 0.5s, display 0.5s allow-discrete;
+}
+
 @media (min-width: 768px) {
   .container {
     max-width: 1200px;
   }
-  .wrap {
-    display: grid;
-    grid-template-columns: repeat(
-      auto-fit,
-      minmax(400px, 35%)
-    ); /* Равномерное распределение колонок */
-    justify-content: center; /* Центрирование содержимого */
-    align-self: center; /* Выравнивание элементов */
+
+  .form {
     gap: 30px;
-    transition: all 0.5s, display 0.5s allow-discrete;
   }
 }

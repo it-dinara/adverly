@@ -57,6 +57,7 @@ const FormPage = () => {
     <div className={s.container}>
       <div className={s.wrap}>
         <form
+          className={s.form}
           onSubmit={handleSubmit(onSubmit, (errors: any) => onInvalid(errors))}
         >
           <FirstStep
@@ -65,7 +66,12 @@ const FormPage = () => {
             errors={errors}
             setValue={setValue}
           />
-          <SecondStep register={register} watch={watch} errors={errors} />
+          <SecondStep
+            register={register}
+            watch={watch}
+            errors={errors}
+            setValue={setValue}
+          />
         </form>
       </div>
 
