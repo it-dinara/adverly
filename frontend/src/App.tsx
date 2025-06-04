@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import AdvertisementPage from "./pages/ItemPage";
 import React, { StrictMode } from "react";
 import FormPage from "./pages/FormPage";
@@ -8,9 +8,10 @@ function App() {
   return (
     <StrictMode>
       <Routes>
-        <Route path="/items/:id" element={<AdvertisementPage />} />
-        <Route path="/list/" element={<ListOfAdvertisementsPage />} />
+        <Route path="/" element={<Navigate to="/form" replace />} />
         <Route path="/form" element={<FormPage />} />
+        <Route path="/list/" element={<ListOfAdvertisementsPage />} />
+        <Route path="/items/:id" element={<AdvertisementPage />} />
       </Routes>
     </StrictMode>
   );
