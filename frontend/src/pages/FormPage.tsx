@@ -40,15 +40,6 @@ const FormPage = () => {
     }
   };
 
-  const handleDelete = async (id: number): Promise<void> => {
-    try {
-      await axios.delete(`http://127.0.0.1:3000/items/${id}`);
-      setItems(items.filter((item) => item.id !== id));
-    } catch (error) {
-      console.error("Error deleting item:", error);
-    }
-  };
-
   const onInvalid = (errors: any) => {
     console.error("Validation Errors:", errors);
   };
@@ -74,16 +65,6 @@ const FormPage = () => {
           />
         </form>
       </div>
-
-      <h2>{items.length > 0 && `Items`}</h2>
-      <ul>
-        {items.map((item) => (
-          <li key={item.id}>
-            <Link to={`/items/${item.id}`}>{item.name}</Link>
-            <button onClick={() => handleDelete(item.id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 };
