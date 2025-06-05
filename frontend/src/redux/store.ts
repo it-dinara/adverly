@@ -7,7 +7,6 @@ import storageSession from "redux-persist/lib/storage/session";
 import { persistReducer, persistStore } from "redux-persist";
 import formReducer from "./slices/formSlice";
 import itemsReducer from "./slices/itemsListSlice";
-import itemReducer from "./slices/itemSlice";
 
 const listenerMiddleware = createListenerMiddleware();
 
@@ -21,7 +20,6 @@ const persistConfig = {
 const rootReducer = combineReducers({
   form: formReducer,
   items: itemsReducer,
-  item: itemReducer,
 });
 
 // Wrap rootReducer with persistReducer

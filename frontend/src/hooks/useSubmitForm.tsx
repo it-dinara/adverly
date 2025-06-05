@@ -18,7 +18,7 @@ export default function useSubmitForm(): (data: FormState) => Promise<void> {
         await axiosInstance.post(`/items`, data);
       }
       dispatch(resetForm());
-      navigate(`/list`);
+      navigate(`/items`);
     } catch (error) {
       console.error("Error submitting item:", error);
     }

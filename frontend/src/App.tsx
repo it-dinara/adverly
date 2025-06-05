@@ -10,7 +10,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/form" replace />} />
         <Route path="/form" element={<FormPage />} />
-        <Route path="/list/" element={<ListOfAdvertisementsPage />} />
+        <Route path="/items/" element={<ListOfAdvertisementsPage />} />
         <Route path="/items/:id" element={<AdvertisementPage />} />
       </Routes>
     </StrictMode>
