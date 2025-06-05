@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import s from "./Auto.module.css";
+import s from "./Categories.module.css";
 import { Categories, Car, FormState } from "Types/form";
 import axios from "axios";
 import { useAppSelector } from "Redux/hooks";
@@ -66,10 +66,7 @@ const Auto: React.FC<AutoProps> = ({ register, watch, errors }) => {
   const renderModelOptions = () => (
     <>
       <option
-        value={
-          models.find((model) => model.name === selectedModel)?.name ||
-          ""
-        }
+        value={models.find((model) => model.name === selectedModel)?.name || ""}
       >
         {selectedModel &&
         models.find((model) => model.name === selectedModel)?.name

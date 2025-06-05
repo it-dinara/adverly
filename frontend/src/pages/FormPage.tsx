@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import FirstStep from "../components/Steps/FirstStep/FirstStep";
+import FirstStep from "../components/Steps/FirstStep";
 import { Link } from "react-router-dom";
 import s from "./FormPage.module.css";
 import useReduxFormSync from "Hooks/useReduxFormSync";
 import useSubmitForm from "Hooks/useSubmitForm";
 import { formStateSchema, FormStateValues } from "Types/form";
-import SecondStep from "../components/Steps/SecondStep/SecondStep";
+import SecondStep from "../components/Steps/SecondStep";
 
 const FormPage = () => {
   const [items, setItems] = useState<{ id: number; name: string }[]>([]);

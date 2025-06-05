@@ -1,5 +1,4 @@
 .form {
-  /* Your existing form styles */
   max-width: 600px;
   padding: 1rem;
   background-color: #fff;
@@ -57,11 +56,10 @@
   cursor: pointer;
 }
 
-/* --------- ERROR STYLE --------- */
 .error {
-  color: #ff0033; /* Red color for errors */
-  font-size: 0.85rem; /* Slightly smaller font size */
-  margin-top: 0.25rem; /* A small margin above the error message */
+  color: #ff0033;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
 }
 
 @media (min-width: 768px) {

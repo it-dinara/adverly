@@ -1,5 +1,5 @@
 import React from "react";
-import s from "./Services.module.css";
+import s from "./Categories.module.css";
 import { useAppSelector } from "Redux/hooks";
 
 const serviceTypes = [

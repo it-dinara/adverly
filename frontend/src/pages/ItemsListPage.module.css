@@ -1,4 +1,3 @@
-/* General Page Styling */
 .container {
   max-width: 800px;
   margin: 20px auto;
@@ -9,7 +8,6 @@
   animation: fadeIn 0.8s ease-in-out;
 }
 
-/* Heading */
 .title {
   text-align: center;
   color: #333;
@@ -18,7 +16,6 @@
   font-size: 22px;
 }
 
-/* Error Message */
 .errorMessage {
   color: red;
   text-align: center;
@@ -26,7 +23,6 @@
   animation: shake 0.5s ease-in-out;
 }
 
-/* Filters Section */
 .filterContainer {
   display: flex;
   flex-direction: column;
@@ -34,7 +30,6 @@
   margin-bottom: 15px;
 }
 
-/* Dropdown Select */
 .selectBox {
   width: 100%;
   padding: 8px;
@@ -48,7 +43,6 @@
   background-color: #f1f1f1;
 }
 
-/* Search Box */
 .searchBox {
   width: 100%;
   padding: 8px;
@@ -62,7 +56,6 @@
   box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
 }
 
-/* Submit Button */
 .submitButton {
   display: block;
   width: 100%;
@@ -82,20 +75,17 @@
   transform: scale(1.05);
 }
 
-/* Button Link */
 .submitButtonLink {
   color: white;
   text-decoration: none;
 }
 
-/* Items List */
 .itemsList {
   list-style: none;
   padding: 0;
   animation: fadeInUp 0.8s ease-in-out;
 }
 
-/* Item Card */
 .itemCard {
   background: white;
   padding: 15px;
@@ -134,7 +124,6 @@
   border-radius: 8px; /* Скругленные углы */
 }
 
-/* Item Link */
 .itemLink {
   display: block;
   font-size: 18px;
@@ -156,8 +145,6 @@
   transform: scale(1.05);
 }
 
-/* Item Details */
-
 .itemDetails {
   word-break: break-word;
 }
@@ -173,13 +160,11 @@
   color: #666;
 }
 
-/* Pagination */
 .paginationContainer {
   text-align: center;
   margin-top: 20px;
 }
 
-/* No Items Found Message */
 .noItemsMessage {
   text-align: center;
   font-size: 18px;
@@ -187,7 +172,6 @@
   animation: pulse 1.5s infinite;
 }
 
-/* Keyframe Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;

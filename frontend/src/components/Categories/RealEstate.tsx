@@ -1,5 +1,5 @@
 import React from "react";
-import s from "./RealEstate.module.css";
+import s from "./Categories.module.css";
 import { useAppSelector } from "Redux/hooks";
 
 const propertyTypes = [

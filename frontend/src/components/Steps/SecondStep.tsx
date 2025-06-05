@@ -1,8 +1,8 @@
 import React from "react";
 import { Categories, FormState } from "Types/form";
-import Auto from "Categories/Auto/Auto";
-import RealEstate from "Categories/RealEstate/RealEstate";
-import Services from "Categories/Services/Services";
+import Auto from "Categories/Auto";
+import RealEstate from "Categories/RealEstate";
+import Services from "Categories/Services";
 import { useAppSelector } from "Redux/hooks";
 import { UseFormWatch } from "react-hook-form";
 

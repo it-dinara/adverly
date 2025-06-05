@@ -10,12 +10,9 @@
 
 .form {
   display: grid;
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(300px, 35%)
-  ); /* Равномерное распределение колонок */
-  justify-content: center; /* Центрирование содержимого */
-  align-self: center; /* Выравнивание элементов */
+  grid-template-columns: repeat(auto-fit, minmax(300px, 35%));
+  justify-content: center;
+  align-self: center;
   gap: 15px;
   transition: all 0.5s, display 0.5s allow-discrete;
   margin-top: 15px;
