@@ -43,11 +43,8 @@ const Auto: React.FC<AutoProps> = ({ register, watch, errors }) => {
   const selectedBrand = watch("brand") || "";
   const selectedModel = watch("model") || "";
 
-  // Memoize filtered models so we don’t re-compute on every render
-  const models = useMemo(
-    () => carBrands.find((car) => car.name === selectedBrand)?.models || [],
-    [carBrands, selectedBrand]
-  );
+  const models =
+    carBrands.find((car) => car.name === selectedBrand)?.models || [];
 
   // Render functions for cleaner JSX
   const renderBrandOptions = () => (
