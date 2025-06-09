@@ -50,7 +50,7 @@ const ItemPage: React.FC = () => {
   };
 
   // Create a list of item details
-  let list = Object.entries(item ?? {}).map(([type, value]) => {
+  const list = Object.entries(item ?? {}).map(([type, value]) => {
     return (
       <p key={type} className={s.itemInfo}>
         <strong>{type}:</strong> {value}
@@ -58,7 +58,7 @@ const ItemPage: React.FC = () => {
     );
   });
 
-  let photo = item && (
+  const photo = item && (
     <div className={s.imageContainer} key={"photo"}>
       <img
         className={s.image}
@@ -72,7 +72,7 @@ const ItemPage: React.FC = () => {
     </div>
   );
 
-  let itemDetails = (
+  const itemDetails = (
     <>
       <div className={s.itemDetails}>
         <h2 className={s.title}>Item Details</h2>
