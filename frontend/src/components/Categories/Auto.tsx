@@ -3,7 +3,7 @@ import s from "./Categories.module.css";
 import { Categories, Car, FormState } from "Types/form";
 import axios from "axios";
 import { useAppSelector } from "Redux/hooks";
-import { UseFormWatch } from "react-hook-form";
+import { UseFormWatch, FieldErrors, UseFormRegister } from "react-hook-form";
 
 const carMileage = [
   5000, 15000, 30000, 50000, 75000, 100000, 150000, 200000, 250000, 300000,
@@ -15,13 +15,11 @@ const years: number[] = Array.from(
   (_, i) => currentYear - i
 );
 
-type AutoProps = {
-  register: any;
+interface AutoProps {
+  register: UseFormRegister<FormState>;
+  errors: FieldErrors<FormState>;
   watch: UseFormWatch<FormState>;
-  errors: any;
-  setValue: any;
-  [key: string]: any; // for any other props
-};
+}
 
 const Auto: React.FC<AutoProps> = ({ register, watch, errors }) => {
   const { isEditing } = useAppSelector((state) => state.form);

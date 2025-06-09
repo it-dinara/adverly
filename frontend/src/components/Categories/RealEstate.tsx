@@ -1,6 +1,8 @@
 import React from "react";
 import s from "./Categories.module.css";
 import { useAppSelector } from "Redux/hooks";
+import { UseFormRegister, FieldErrors } from "react-hook-form";
+import { FormState } from "Types/form";
 
 const propertyTypes = [
   "Квартира",
@@ -11,9 +13,8 @@ const propertyTypes = [
 ];
 
 type RealEstateProps = {
-  register: any;
-  errors: any;
-  [key: string]: any; // for other props like register
+  register: UseFormRegister<FormState>;
+  errors: FieldErrors<FormState>;
 };
 
 const RealEstate: React.FC<RealEstateProps> = ({ register, errors }) => {

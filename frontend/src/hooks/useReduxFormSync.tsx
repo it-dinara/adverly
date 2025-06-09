@@ -26,7 +26,6 @@ export default function useReduxFormSync<T extends FieldValues>({
   defaultValues = {} as T,
   mode,
 }: UseReduxFormSyncProps<T>): UseFormReturn<T> {
-  // Select the whole form state (or a specific slice) from the Redux store
   const storedData = useAppSelector((state) => state.form);
   const dispatch = useAppDispatch();
 

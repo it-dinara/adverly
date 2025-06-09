@@ -1,17 +1,21 @@
 import React from "react";
-import { UseFormWatch } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "Redux/hooks";
 import { updatePhoto } from "Redux/slices/formSlice";
 import { Categories, FormState } from "Types/form";
 import s from "./FirstStep.module.css";
+import {
+  UseFormRegister,
+  FieldErrors,
+  UseFormSetValue,
+  UseFormWatch,
+} from "react-hook-form";
 
-type FirstStepProps = {
-  register: any;
+interface FirstStepProps {
+  register: UseFormRegister<FormState>;
+  errors: FieldErrors<FormState>;
+  setValue: UseFormSetValue<FormState>;
   watch: UseFormWatch<FormState>;
-  errors: any;
-  setValue: any;
-  [key: string]: any; // for other props like register
-};
+}
 
 const FirstStep: React.FC<FirstStepProps> = ({
   register,
@@ -46,7 +50,9 @@ const FirstStep: React.FC<FirstStepProps> = ({
           id="name"
           {...register("name")}
         />
-        {errors.name && <div className={s.error}>{errors.name.message}</div>}
+        {errors.name && (
+          <div className={s.error}>{errors.name.message?.toString()}</div>
+        )}
       </div>
 
       <div className={s.formGroup}>
@@ -59,8 +65,10 @@ const FirstStep: React.FC<FirstStepProps> = ({
           id="description"
           {...register("description")}
         />
-        {errors.description && (
-          <div className={s.error}>{errors.description.message}</div>
+        {errors?.description?.message && (
+          <div className={s.error}>
+            {errors.description.message?.toString()}
+          </div>
         )}
       </div>
 
@@ -75,7 +83,7 @@ const FirstStep: React.FC<FirstStepProps> = ({
           {...register("location")}
         />
         {errors.location && (
-          <div className={s.error}>{errors.location.message}</div>
+          <div className={s.error}>{errors.location.message?.toString()}</div>
         )}
       </div>
 

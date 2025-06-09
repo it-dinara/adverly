@@ -1,6 +1,8 @@
 import React from "react";
 import s from "./Categories.module.css";
 import { useAppSelector } from "Redux/hooks";
+import { UseFormRegister, FieldErrors } from "react-hook-form";
+import { FormState } from "Types/form";
 
 const serviceTypes = [
   "Ремонт",
@@ -11,9 +13,8 @@ const serviceTypes = [
 ];
 
 type ServicesProps = {
-  register: any;
-  errors: any;
-  [key: string]: any; // for other props like register
+  register: UseFormRegister<FormState>;
+  errors: FieldErrors<FormState>;
 };
 
 const Services: React.FC<ServicesProps> = ({ register, errors }) => {
