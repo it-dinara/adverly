@@ -1,10 +1,9 @@
 import React from "react";
+import { UseFormWatch } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "Redux/hooks";
 import { updatePhoto } from "Redux/slices/formSlice";
+import { Categories, FormState } from "Types/form";
 import s from "./FirstStep.module.css";
-import { Categories } from "Types/form";
-import { FormState } from "Types/form";
-import { UseFormWatch } from "react-hook-form";
 
 type FirstStepProps = {
   register: any;

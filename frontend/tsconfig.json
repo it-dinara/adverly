@@ -28,6 +28,6 @@
       { "name": "typescript-plugin-css-modules" }
     ]
   },
-  "include": ["src/**/*", "src/index.tsx", "src/utils"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }

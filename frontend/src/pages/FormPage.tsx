@@ -1,16 +1,12 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import FirstStep from "../components/Steps/FirstStep";
-import { Link } from "react-router-dom";
-import s from "./FormPage.module.css";
 import useReduxFormSync from "Hooks/useReduxFormSync";
 import useSubmitForm from "Hooks/useSubmitForm";
+import React from "react";
 import { formStateSchema, FormStateValues } from "Types/form";
-import SecondStep from "../components/Steps/SecondStep";
+import FirstStep from "../components/Steps/FirstStep/FirstStep";
+import SecondStep from "../components/Steps/SecondStep/SecondStep";
+import s from "./FormPage.module.css";
 
 const FormPage = () => {
-  const [items, setItems] = useState<{ id: number; name: string }[]>([]);
-
   const {
     register,
     handleSubmit,
@@ -24,21 +20,6 @@ const FormPage = () => {
   });
 
   const onSubmit = useSubmitForm();
-
-  useEffect(() => {
-    fetchItems();
-  }, []);
-
-  const fetchItems = async () => {
-    try {
-      const response = await axios.get<{ id: number; name: string }[]>(
-        `http://127.0.0.1:3000/items`
-      );
-      setItems(response.data);
-    } catch (error) {
-      console.error("Error fetching items:", error);
-    }
-  };
 
   const onInvalid = (errors: any) => {
     console.error("Validation Errors:", errors);

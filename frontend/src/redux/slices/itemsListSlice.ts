@@ -8,6 +8,8 @@ const initialState: ItemsState = {
   itemsPerPage: 5,
 };
 
+//TODO rewrite it to RTK QUERY
+
 // Async thunk to fetch items (simulate API call)
 export const fetchItems = createAsyncThunk("items/fetchItems", async () => {
   const response = await axios.get<Item[]>("http://127.0.0.1:3000/items");

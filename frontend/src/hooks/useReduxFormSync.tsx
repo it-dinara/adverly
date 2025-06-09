@@ -53,7 +53,6 @@ export default function useReduxFormSync<T extends FieldValues>({
   const debouncedUpdate = useMemo(
     () =>
       debounce((data) => {
-        console.log("formField:", formField, "data:", data);
         dispatch(
           updateData({ field: formField as string | number, value: data })
         );

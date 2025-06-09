@@ -14,15 +14,27 @@ type SecondStepProps = {
   [key: string]: any; // for other props like register
 };
 
-const SecondStep: React.FC<SecondStepProps> = (props) => {
+const SecondStep: React.FC<SecondStepProps> = ({
+  register,
+  watch,
+  errors,
+  setValue,
+}) => {
   const selectedCategory = useAppSelector((state) => state.form.category);
   let categoryForm: React.ReactElement | null = null;
   if (selectedCategory === Categories.AUTO) {
-    categoryForm = <Auto {...props} />;
+    categoryForm = (
+      <Auto
+        register={register}
+        watch={watch}
+        errors={errors}
+        setValue={setValue}
+      />
+    );
   } else if (selectedCategory === Categories.REAL_ESTATE) {
-    categoryForm = <RealEstate {...props} />;
+    categoryForm = <RealEstate register={register} errors={errors} />;
   } else if (selectedCategory === Categories.SERVICES) {
-    categoryForm = <Services {...props} />;
+    categoryForm = <Services register={register} errors={errors} />;
   }
   return <>{categoryForm}</>;
 };
