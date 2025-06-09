@@ -1,6 +1,8 @@
 const { hostname } = require("os");
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const webpack = require("webpack");
+require("dotenv").config();
 
 module.exports = {
   entry: "./src/index.tsx",
@@ -87,6 +89,11 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "./public/index.html", // Ensure this file exists
       filename: "index.html",
+    }),
+    new webpack.DefinePlugin({
+      "process.env.REACT_APP_API_URL": JSON.stringify(
+        process.env.REACT_APP_API_URL
+      ),
     }),
   ],
 };
