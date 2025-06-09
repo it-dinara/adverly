@@ -173,9 +173,7 @@ const ItemsListPage: React.FC = () => {
       </div>
 
       <Link to={`/form`} className={s.submitButtonLink}>
-        <button type="button" className={s.submitButton}>
-          Разместить объявление
-        </button>
+        Разместить объявление
       </Link>
 
       {filteredItems.length > 0 ? (
