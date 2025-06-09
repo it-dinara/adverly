@@ -43,6 +43,8 @@ const Auto: React.FC<AutoProps> = ({ register, watch, errors }) => {
   const selectedBrand = watch("brand") || "";
   const selectedModel = watch("model") || "";
 
+  // Model resets back to default value "выберите модель" if user change
+  // SelectedBrand, cause each Brand has his own arrays of models
   const models =
     carBrands.find((car) => car.name === selectedBrand)?.models || [];
 
@@ -58,15 +60,13 @@ const Auto: React.FC<AutoProps> = ({ register, watch, errors }) => {
     </>
   );
 
+  const findModel = () =>
+    models.find((model) => model.name === selectedModel)?.name;
+
   const renderModelOptions = () => (
     <>
-      <option
-        value={models.find((model) => model.name === selectedModel)?.name || ""}
-      >
-        {selectedModel &&
-        models.find((model) => model.name === selectedModel)?.name
-          ? selectedModel
-          : "Выберите модель"}
+      <option value={findModel() || ""}>
+        {selectedModel && findModel() ? selectedModel : "Выберите модель"}
       </option>
       {models.map((model) => (
         <option key={model.id} value={model.name}>
