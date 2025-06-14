@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import s from "./Categories.module.css";
 import { Categories, Car, FormState } from "Types/form";
 import axios from "axios";

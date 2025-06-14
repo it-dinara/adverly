@@ -28,6 +28,6 @@
       { "name": "typescript-plugin-css-modules" }
     ]
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "../../trackit/frontend/src/modals"],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }
