@@ -1,0 +1,8 @@
+      PID    PPID    PGID     WINPID   TTY         UID    STIME COMMAND
+     1420       1    1420      16964  cons0     197609 14:40:29 /usr/bin/bash
+     1432       1    1432       6856  cons1     197609 14:40:30 /usr/bin/bash
+     2020    2017    2017       7652  cons3     197609 15:45:31 /c/Program Files/Docker/Docker/resources/bin/docker-compose
+     2017    1695    2017       3220  cons3     197609 15:45:30 /usr/bin/sh
+     2025    1433    2025      17868  cons2     197609 15:49:58 /usr/bin/PS
+     1695       1    1695      16484  cons3     197609 15:30:28 /usr/bin/bash
+     1433       1    1433       5828  cons2     197609 14:40:30 /usr/bin/bash

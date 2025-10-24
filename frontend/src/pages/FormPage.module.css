@@ -1,0 +1,29 @@
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.wrap {
+  display: grid;
+  height: 75vh;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 35%));
+  justify-content: center;
+  align-self: center;
+  gap: 15px;
+  transition: all 0.5s, display 0.5s allow-discrete;
+  margin-top: 15px;
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 1200px;
+  }
+
+  .form {
+    gap: 30px;
+  }
+}

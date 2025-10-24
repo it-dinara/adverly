@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "module": "ESNext",
+    "jsx": "react",
+    "strict": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "paths": {
+      "Redux/*": ["src/redux/*"],
+      "AxiosAdverly": ["src/axios-adverly.ts"],
+      "Pages/*": ["src/pages/*"],
+      "Types/*": ["src/types/*"],
+      "Categories/*": ["src/components/Categories/*"],
+      "Utils/*": ["src/utils/*"],
+      "Hooks/*": ["src/hooks/*"],
+      "Constants/*": ["src/constants/*"]
+    },
+    "plugins": [
+      {
+        "transform": "typescript-transform-paths"
+      },
+      {
+        "transform": "typescript-transform-paths",
+        "afterDeclarations": true
+      },
+      { "name": "typescript-plugin-css-modules" }
+    ]
+  },
+  "include": ["src/**/*", "../../trackit/frontend/src/modals"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
+}
